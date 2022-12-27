@@ -44,41 +44,56 @@ class Post(db.Model):
 
 class Game(db.Model):
     id = db.Column(db.Integer, primary_key = True)
-    posessions = db.relationship('Possession')
-    player1 = db.Column(db.Integer, db.ForeignKey('player.id'),default=1)
-    player2 = db.Column(db.Integer, db.ForeignKey('player.id'))
-    player3 = db.Column(db.Integer, db.ForeignKey('player.id'))
-    player4 = db.Column(db.Integer, db.ForeignKey('player.id'))
-    player5 = db.Column(db.Integer, db.ForeignKey('player.id'))
-    player6 = db.Column(db.Integer, db.ForeignKey('player.id'))
-    player7 = db.Column(db.Integer, db.ForeignKey('player.id'))
+    team = db.Column(db.String)
+    date = db.Column(db.DateTime(timezone=True))
+    
+    players = db.relationship('Game_player')
+    possessions = db.relationship('Possession')
+
+
+class Game_player(db.Model):
+    id = db.Column(db.Integer, primary_key = True)
+    game_id = db.Column(db.Integer, db.ForeignKey('game.id'))
+    player_id = db.Column(db.Integer, db.ForeignKey('player.id'))
+    
+    
+class Poss_player(db.Model):
+    id = db.Column(db.Integer, primary_key = True)
+    poss_id = db.Column(db.Integer, db.ForeignKey('possession.id'))
+    player_id = db.Column(db.Integer, db.ForeignKey('player.id'))
+
 
 class Possession(db.Model):
-    game_id = db.Column(db.Integer, db.ForeignKey('game.id'))
     id = db.Column(db.Integer, primary_key = True)
+    
+    game_id = db.Column(db.Integer, db.ForeignKey('game.id'))
+    players = db.relationship('Poss_player')
+    
+    
     posessed = db.Column(db.Boolean)
     start = db.Column(db.String(20))
     strigger = db.Column(db.String(20), nullable=True)
     secondary = db.Column(db.String(20), nullable=True)
-    usr = db.Column(db.Integer, db.ForeignKey('player.id'), nullable=True)
-    scr = db.Column(db.Integer, db.ForeignKey('player.id'), nullable=True)
-    psr = db.Column(db.Integer, db.ForeignKey('player.id'), nullable=True)
+    #usr = db.Column(db.Integer, db.ForeignKey('player.id'), nullable=True)
+    #scr = db.Column(db.Integer, db.ForeignKey('player.id'), nullable=True)
+    #psr = db.Column(db.Integer, db.ForeignKey('player.id'), nullable=True)
     shotlocation = db.Column(db.String(5), nullable=True)
     result = db.Column(db.String(5))
-    p = db.Column(db.Integer, nullable=True)
+    assist = db.Column(db.Integer, nullable=True)
     ftmade = db.Column(db.Integer, nullable=True)
     ftattempts = db.Column(db.Integer, nullable=True)
     open3 = db.Column(db.Integer, nullable=True)
-    shooter = db.Column(db.Integer, db.ForeignKey('player.id'), nullable=True)
-    passer = db.Column(db.Integer, db.ForeignKey('player.id'), nullable=True)
+    #shooter = db.Column(db.Integer, db.ForeignKey('player.id'), nullable=True)
+    #passer = db.Column(db.Integer, db.ForeignKey('player.id'), nullable=True)
     catch_shoot = db.Column(db.Integer, nullable=True)
+    esq = db.Column(db.Flo)
     #ESQ GOES HERE??????
     shotclock = db.Column(db.Integer)
-    p1 = db.Column(db.Integer, db.ForeignKey('player.id'), nullable=True)
-    p2 = db.Column(db.Integer, db.ForeignKey('player.id'), nullable=True)
-    p3 = db.Column(db.Integer, db.ForeignKey('player.id'), nullable=True)
-    p4 = db.Column(db.Integer, db.ForeignKey('player.id'), nullable=True)
-    p5 = db.Column(db.Integer, db.ForeignKey('player.id'), nullable=True)
+    #p1 = db.Column(db.Integer, db.ForeignKey('player.id'), nullable=True)
+    #p2 = db.Column(db.Integer, db.ForeignKey('player.id'), nullable=True)
+    #p3 = db.Column(db.Integer, db.ForeignKey('player.id'), nullable=True)
+    #p4 = db.Column(db.Integer, db.ForeignKey('player.id'), nullable=True)
+    #p5 = db.Column(db.Integer, db.ForeignKey('player.id'), nullable=True)
     tag1 = db.Column(db.Integer, nullable=True)    
     tag2 = db.Column(db.Integer, nullable=True)
     tag3 = db.Column(db.Integer, nullable=True)
@@ -94,8 +109,16 @@ class Possession(db.Model):
     
 class Player(db.Model):
     id = db.Column(db.Integer, primary_key = True)
+    games = db.relationship('Game_player')
+    possessions = db.relationship('Poss_player')
+    
+    
+    
+    
+    
     number = db.Column(db.Integer)
     initials = db.Column(db.String(5))
     name = db.Column(db.String(30))
+    
     #games = db.relationship('Game')
     

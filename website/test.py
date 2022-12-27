@@ -4,7 +4,6 @@ import ssl
 import time
 
 import pandas as pd
-from flask_apscheduler import APScheduler
 from sqlalchemy import and_
 
 from __init__ import db
