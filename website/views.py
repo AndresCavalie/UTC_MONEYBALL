@@ -17,37 +17,23 @@ from pathlib import Path
 @views.route('/', methods=['GET','POST'])
 @login_required
 def home():
-    
     if request.method == 'POST':
         sheet = request.files['data']
         df = pd.read_excel(sheet)
-        # print(df)
+        #from one spreadsheet, create one game, and posessions with players
+        playerlist = []
         
         
+        
+        game = Game(team = df.loc[0,"Opp"],date = str(df.loc[0,"Date"]) ) #, date = df.loc[i,"Date"])
+        db.session.add(game)
+        db.session.commit()
         for i in range(len(df)):
-            if i == 0:
-                game = Game(team = df.loc[i,"Opp"],date = str(df.loc[i,"Date"]) ) #, date = df.loc[i,"Date"])
-                db.session.add(game)
-                db.session.commit()   
-            print(i)
-            # usr = df.loc[i,"Usr"],
-            # realuser = Player.query.filter_by(number=df.loc[i,"Usr"])
-            # print(realuser)
-            # if not realuser:
-            #     realuser=None
-            # scr = df.loc[i,"Scr"],
-            # psr = df.loc[i,"Psr"],
-            # shooter = df.loc[i,"Shooter"],
-            # passer = df.loc[i,"Passer"],
-            # p1 = df.loc[i,"P1"],
-            # p2 = df.loc[i,"P2"],
-            # p3 = df.loc[i,"P3"],
-            # p4 = df.loc[i,"P4"],
-            # p5 = df.loc[i,"P5"],
-            # if str(df.loc[i, "Tag Start"]) == "nan":
-            #     tagstart = None
-            # else:
-            #     tagstart = str(df.loc[i, "Tag Start"])
+            # if i == 0:
+            #     game = Game(team = df.loc[i,"Opp"],date = str(df.loc[i,"Date"]) ) #, date = df.loc[i,"Date"])
+            #     db.session.add(game)
+            #     db.session.commit()   
+            # print(i)
             
             tagstart = (df.loc[i, "Tag Start"])
             if tagstart == tagstart:
@@ -58,30 +44,37 @@ def home():
             if usr == usr:
                 usr = Player.query.filter_by(initials=usr).first()
                 print(usr)
+                if usr not in playerlist:
+                    playerlist.append(usr)
                 usr = usr.id
+                
             
             print("scr")       
             scr = (df.loc[i, "Scr"])
             if scr == scr:
                 scr = Player.query.filter_by(initials=scr).first()
                 print(scr)
+                if scr not in playerlist:
+                    playerlist.append(scr)
                 scr = scr.id
+                
             
             print("psr")   
             psr = (df.loc[i, "Psr"])
             if psr == psr:
                 psr = Player.query.filter_by(initials=psr).first()
                 print(psr)
+                if psr not in playerlist:
+                    playerlist.append(psr)
                 psr = psr.id
-            
-            
-            
-            
+                
             print("shooter")  
             shooter = (df.loc[i, "Shooter"])
             if shooter == shooter:
                 shooter = Player.query.filter_by(initials=shooter).first()
                 print(shooter)
+                if shooter not in playerlist:
+                    playerlist.append(shooter)
                 shooter = shooter.id
                 
             print("passer")    
@@ -89,55 +82,62 @@ def home():
             if passer == passer:
                 passer = Player.query.filter_by(initials=passer).first()
                 print(passer)
+                if passer not in playerlist:
+                    playerlist.append(passer)
                 passer = passer.id
                 
-            
-            
+                
             print("p1")
             p1 = (df.loc[i, "P1"])
             if p1 == p1:
                 p1 = Player.query.filter_by(number=p1).first()
                 print(p1)
+                if p1 not in playerlist:
+                    playerlist.append(p1)
                 p1 = p1.id
+                
             
             print("p2")  
             p2 = (df.loc[i, "P2"])
             if p2 == p2:
                 p2 = Player.query.filter_by(number=p2).first()
                 print(p2)
+                if p2 not in playerlist:
+                    playerlist.append(p2)
                 p2 = p2.id
+                
             
             print("p3")    
             p3 = (df.loc[i, "P3"])
             if p3 == p3:
                 p3 = Player.query.filter_by(number=p3).first()
                 print(p3)
+                if p3 not in playerlist:
+                    playerlist.append(p3)
                 p3 = p3.id
+                
             
             print("p4")    
             p4 = (df.loc[i, "P4"])
             if p4 == p4:
                 p4 = Player.query.filter_by(number=p4).first()
                 print(p4)
+                if p4 not in playerlist:
+                    playerlist.append(p4)
                 p4 = p4.id
+                
             
             print("p5")
             p5 = (df.loc[i, "P5"])
             if p5 == p5:
                 p5 = Player.query.filter_by(number=p5).first()
                 print(p5)
+                if p5 not in playerlist:
+                    playerlist.append(p5)
                 p5 = p5.id
-            
-            
-                
-        
-            
-
                 
                 
-                
-                
-            poss = Possession(game_id=game.id,# players,
+            poss = Possession(game_id=game.id,
                                 possnum = int(df.loc[i,"Poss #"]),
                                 tagstart = tagstart,
                                 poss = df.loc[i,"Poss"],
@@ -185,19 +185,18 @@ def home():
                                 ft = int(df.loc[i,"FT"]),
                                 points = int(df.loc[i,"POINTS"]))
                                 
-
             db.session.add(poss)
             db.session.commit()   
-                
-            # elif df.loc[i,"Opp"] == game.name:
-            #     poss = poss with game.id
-            # else:
-            #     game = game
-            #     poss = poss with game.id
-                
+        for i in range(len(playerlist)):
+            game.players.append(playerlist[i]) 
+            db.session.commit()
+            db.session.add(playerlist[i])    
+            db.session.commit()
+        print(playerlist) 
       
-            
-        
+        print(game.players)  
+        aj = Player.query.filter_by(initials="AJ").first()
+        print(aj.games)
         return render_template("home.html",user=current_user)
     # if request.method == 'POST':
     #     searchName = request.form.get('searchNameName')
