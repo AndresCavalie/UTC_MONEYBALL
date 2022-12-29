@@ -2,6 +2,10 @@ from . import db
 from flask_login import UserMixin
 from sqlalchemy.sql import func
 
+
+
+
+
 class Note(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     data = db.Column(db.String(1000))
@@ -41,59 +45,64 @@ class Post(db.Model):
     keyword = db.Column(db.String(150))
     subreddit = db.Column(db.String(150))
     permalink = db.Column(db.String(150))
-
+    
+game_player = db.Table( #ASSOCIATION TABLE
+    "game_player",
+    db.metadata,
+    db.Column("game_id", db.ForeignKey('game.id'), primary_key = True),
+    db.Column("player_id", db.ForeignKey('player.id'), primary_key = True)
+)
 class Game(db.Model):
     id = db.Column(db.Integer, primary_key = True)
     team = db.Column(db.String)
-    date = db.Column(db.DateTime(timezone=True))
-    
-    players = db.relationship('Game_player')
+    # date = db.Column(db.DateTime(timezone=True), nullable= True)
+    date = db.Column(db.String, nullable= True)
+    players = db.relationship("Player", secondary = game_player, backref="games")
     possessions = db.relationship('Possession')
 
-
-class Game_player(db.Model):
+class Player(db.Model):
     id = db.Column(db.Integer, primary_key = True)
-    game_id = db.Column(db.Integer, db.ForeignKey('game.id'))
-    player_id = db.Column(db.Integer, db.ForeignKey('player.id'))
     
+    number = db.Column(db.Integer)
+    initials = db.Column(db.String(5))
+    name = db.Column(db.String(30))
     
-class Poss_player(db.Model):
-    id = db.Column(db.Integer, primary_key = True)
-    poss_id = db.Column(db.Integer, db.ForeignKey('possession.id'))
-    player_id = db.Column(db.Integer, db.ForeignKey('player.id'))
-
-
 class Possession(db.Model):
     id = db.Column(db.Integer, primary_key = True)
-    
     game_id = db.Column(db.Integer, db.ForeignKey('game.id'))
-    players = db.relationship('Poss_player')
     
-    
-    posessed = db.Column(db.Boolean)
+    possnum = db.Column(db.Integer)
+    tagstart = db.Column(db.String(30), nullable=True)
+    poss = db.Column(db.Boolean)
     start = db.Column(db.String(20))
-    strigger = db.Column(db.String(20), nullable=True)
+    shottrigger = db.Column(db.String(20), nullable=True)
     secondary = db.Column(db.String(20), nullable=True)
-    #usr = db.Column(db.Integer, db.ForeignKey('player.id'), nullable=True)
-    #scr = db.Column(db.Integer, db.ForeignKey('player.id'), nullable=True)
-    #psr = db.Column(db.Integer, db.ForeignKey('player.id'), nullable=True)
-    shotlocation = db.Column(db.String(5), nullable=True)
+    usr = db.Column(db.Integer, db.ForeignKey('player.id'), nullable=True)
+    scr = db.Column(db.Integer, db.ForeignKey('player.id'), nullable=True)
+    psr = db.Column(db.Integer, db.ForeignKey('player.id'), nullable=True)
+    shot = db.Column(db.String(5), nullable=True)
     result = db.Column(db.String(5))
     assist = db.Column(db.Integer, nullable=True)
-    ftmade = db.Column(db.Integer, nullable=True)
-    ftattempts = db.Column(db.Integer, nullable=True)
+    ftm = db.Column(db.Integer, nullable=True)
+    fta = db.Column(db.Integer, nullable=True)
     open3 = db.Column(db.Integer, nullable=True)
-    #shooter = db.Column(db.Integer, db.ForeignKey('player.id'), nullable=True)
-    #passer = db.Column(db.Integer, db.ForeignKey('player.id'), nullable=True)
-    catch_shoot = db.Column(db.Integer, nullable=True)
-    esq = db.Column(db.Flo)
+    
+    
+    #USR SCR PSR Shooter Passer P1 P2 P3 P4 P5
+    
+    
+    
+    shooter = db.Column(db.Integer, db.ForeignKey('player.id'), nullable=True)
+    passer = db.Column(db.Integer, db.ForeignKey('player.id'), nullable=True)
+    csjumper = db.Column(db.Integer, nullable=True)
+    esq = db.Column(db.Numeric(precision = 3, scale = 2),nullable=True)
     #ESQ GOES HERE??????
-    shotclock = db.Column(db.Integer)
-    #p1 = db.Column(db.Integer, db.ForeignKey('player.id'), nullable=True)
-    #p2 = db.Column(db.Integer, db.ForeignKey('player.id'), nullable=True)
-    #p3 = db.Column(db.Integer, db.ForeignKey('player.id'), nullable=True)
-    #p4 = db.Column(db.Integer, db.ForeignKey('player.id'), nullable=True)
-    #p5 = db.Column(db.Integer, db.ForeignKey('player.id'), nullable=True)
+    shotclock = db.Column(db.Integer,nullable=True)
+    p1 = db.Column(db.Integer, db.ForeignKey('player.id'), nullable=True)
+    p2 = db.Column(db.Integer, db.ForeignKey('player.id'), nullable=True)
+    p3 = db.Column(db.Integer, db.ForeignKey('player.id'), nullable=True)
+    p4 = db.Column(db.Integer, db.ForeignKey('player.id'), nullable=True)
+    p5 = db.Column(db.Integer, db.ForeignKey('player.id'), nullable=True)
     tag1 = db.Column(db.Integer, nullable=True)    
     tag2 = db.Column(db.Integer, nullable=True)
     tag3 = db.Column(db.Integer, nullable=True)
@@ -107,18 +116,17 @@ class Possession(db.Model):
     numpasses = db.Column(db.Integer, nullable=True)
     #NEED PLAYER NAMES AND STUFF HERE??????
     
-class Player(db.Model):
-    id = db.Column(db.Integer, primary_key = True)
-    games = db.relationship('Game_player')
-    possessions = db.relationship('Poss_player')
-    
-    
-    
-    
-    
-    number = db.Column(db.Integer)
-    initials = db.Column(db.String(5))
-    name = db.Column(db.String(30))
+    r2 = db.Column(db.Integer)
+    pm2 = db.Column(db.Integer)
+    pt2 = db.Column(db.Integer)
+    np2 = db.Column(db.Integer)
+    pt3 = db.Column(db.Integer)
+    np3 = db.Column(db.Integer)
+    d3 = db.Column(db.Integer)
+    sb3 = db.Column(db.Integer)
+    ft = db.Column(db.Integer)
+    points = db.Column(db.Integer)
+
     
     #games = db.relationship('Game')
     

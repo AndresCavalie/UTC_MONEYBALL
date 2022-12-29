@@ -1,8 +1,8 @@
 from flask import Blueprint, render_template, request, flash, jsonify, redirect,url_for,session
 from flask_login import login_required, current_user
 views = Blueprint('views',__name__)
-from .models import Note, Search, Post, Info, Game, Possession
-from . import db, rmt ,excel_processor
+from .models import Note, Search, Post, Info, Game, Possession, Player
+from . import db, rmt
 import json
 import pandas as pd
 import time
@@ -20,42 +20,180 @@ def home():
     
     if request.method == 'POST':
         sheet = request.files['data']
-    
-        df = excel_processor.process(sheet)
-        print(df)
+        df = pd.read_excel(sheet)
+        # print(df)
+        
+        
         for i in range(len(df)):
-            if i ==0:
-                game = Game(team = df.loc[i,"Opp"] , date = df.loc[i,"Date"])
-                poss = Possession(game_id=game.id,
-                                    # players,
-                                    posessed = df.loc[i,"Poss"],
-                                    start = df.loc[i,"Start"],
-                                    strigger = df.loc[i,"Shot Trigger"],
-                                    secondary = df.loc[i,"Secondary"],
-                                    shotlocation = df.loc[i,"Shot"],
-                                    result = df.loc[i,"Result"],
-                                    assist = df.loc[i,"Assist+"],
-                                    ftmade = df.loc[i,"FTM"],
-                                    ftattempts = df.loc[i,"FTA"],
-                                    open3 = df.loc[i,"Open 3"],
-                                    catch_shoot = df.loc[i,"C&S Jumper"],
-                                    shotclock = df.loc[i,"Result"],
-                                    tag1 = df.loc[i,"Result"],
-                                    tag2 = df.loc[i,"Result"],
-                                    tag3 = df.loc[i,"Result"],
-                                    tag4 = df.loc[i,"Result"],
-                                    tag5 = df.loc[i,"Result"],
-                                    offreb = df.loc[i,"Result"],
-                                    firsttrigger = df.loc[i,"Result"],
-                                    bolt = df.loc[i,"Result"],
-                                    painttouchtime = df.loc[i,"Result"],
-                                    posttouches = df.loc[i,"Result"],
-                                    numpasses = df.loc[i,"Result"])
-            elif df.loc[i,"Opp"] == game.name:
-                poss = poss with game.id
-            else:
-                game = game
-                poss = poss with game.id
+            if i == 0:
+                game = Game(team = df.loc[i,"Opp"],date = str(df.loc[i,"Date"]) ) #, date = df.loc[i,"Date"])
+                db.session.add(game)
+                db.session.commit()   
+            print(i)
+            # usr = df.loc[i,"Usr"],
+            # realuser = Player.query.filter_by(number=df.loc[i,"Usr"])
+            # print(realuser)
+            # if not realuser:
+            #     realuser=None
+            # scr = df.loc[i,"Scr"],
+            # psr = df.loc[i,"Psr"],
+            # shooter = df.loc[i,"Shooter"],
+            # passer = df.loc[i,"Passer"],
+            # p1 = df.loc[i,"P1"],
+            # p2 = df.loc[i,"P2"],
+            # p3 = df.loc[i,"P3"],
+            # p4 = df.loc[i,"P4"],
+            # p5 = df.loc[i,"P5"],
+            # if str(df.loc[i, "Tag Start"]) == "nan":
+            #     tagstart = None
+            # else:
+            #     tagstart = str(df.loc[i, "Tag Start"])
+            
+            tagstart = (df.loc[i, "Tag Start"])
+            if tagstart == tagstart:
+                tagstart = str(tagstart)
+            
+            print("usr")  
+            usr = (df.loc[i, "Usr"])
+            if usr == usr:
+                usr = Player.query.filter_by(initials=usr).first()
+                print(usr)
+                usr = usr.id
+            
+            print("scr")       
+            scr = (df.loc[i, "Scr"])
+            if scr == scr:
+                scr = Player.query.filter_by(initials=scr).first()
+                print(scr)
+                scr = scr.id
+            
+            print("psr")   
+            psr = (df.loc[i, "Psr"])
+            if psr == psr:
+                psr = Player.query.filter_by(initials=psr).first()
+                print(psr)
+                psr = psr.id
+            
+            
+            
+            
+            print("shooter")  
+            shooter = (df.loc[i, "Shooter"])
+            if shooter == shooter:
+                shooter = Player.query.filter_by(initials=shooter).first()
+                print(shooter)
+                shooter = shooter.id
+                
+            print("passer")    
+            passer = (df.loc[i, "Passer"])
+            if passer == passer:
+                passer = Player.query.filter_by(initials=passer).first()
+                print(passer)
+                passer = passer.id
+                
+            
+            
+            print("p1")
+            p1 = (df.loc[i, "P1"])
+            if p1 == p1:
+                p1 = Player.query.filter_by(number=p1).first()
+                print(p1)
+                p1 = p1.id
+            
+            print("p2")  
+            p2 = (df.loc[i, "P2"])
+            if p2 == p2:
+                p2 = Player.query.filter_by(number=p2).first()
+                print(p2)
+                p2 = p2.id
+            
+            print("p3")    
+            p3 = (df.loc[i, "P3"])
+            if p3 == p3:
+                p3 = Player.query.filter_by(number=p3).first()
+                print(p3)
+                p3 = p3.id
+            
+            print("p4")    
+            p4 = (df.loc[i, "P4"])
+            if p4 == p4:
+                p4 = Player.query.filter_by(number=p4).first()
+                print(p4)
+                p4 = p4.id
+            
+            print("p5")
+            p5 = (df.loc[i, "P5"])
+            if p5 == p5:
+                p5 = Player.query.filter_by(number=p5).first()
+                print(p5)
+                p5 = p5.id
+            
+            
+                
+        
+            
+
+                
+                
+                
+                
+            poss = Possession(game_id=game.id,# players,
+                                possnum = int(df.loc[i,"Poss #"]),
+                                tagstart = tagstart,
+                                poss = df.loc[i,"Poss"],
+                                start = df.loc[i,"Start"],
+                                shottrigger = df.loc[i,"Shot Trigger"],
+                                secondary = df.loc[i,"Secondary"],
+                                usr = usr,
+                                scr = scr,
+                                psr = psr,
+                                shot = df.loc[i,"Shot"],
+                                result = df.loc[i,"Result"],
+                                assist = df.loc[i,"Assist+"],
+                                ftm = df.loc[i,"FTM"],
+                                fta = df.loc[i,"FTA"],
+                                open3 = df.loc[i,"Open 3"],
+                                shooter = shooter,
+                                passer = passer,
+                                csjumper = df.loc[i,"C&S Jumper"],
+                                esq = df.loc[i,"ESQ"],
+                                shotclock = df.loc[i,"ShotClock"],
+                                p1 = p1,
+                                p2 = p2,
+                                p3 = p3,
+                                p4 = p4,
+                                p5 = p5,
+                                tag1 = df.loc[i,"1 Tag"],
+                                tag2 = df.loc[i,"2 Tag"],
+                                tag3 = df.loc[i,"3 Tag"],
+                                tag4 = df.loc[i,"4 Tag"],
+                                tag5 = df.loc[i,"5 Tag"],
+                                offreb = df.loc[i,"OffReb"],
+                                firsttrigger = int(df.loc[i,"First Trigger"]),
+                                bolt = df.loc[i,"Bolt"],
+                                painttouchtime = df.loc[i,"Paint Touch Time"],
+                                posttouches = df.loc[i,"PostTouches"],
+                                numpasses = int(df.loc[i,"NumPasses"]),
+                                r2 = int(df.loc[i,"R2"]),
+                                pm2 = int(df.loc[i,"PM2"]),
+                                pt2 = int(df.loc[i,"PT2"]),
+                                np2 = int(df.loc[i,"NP2"]),
+                                pt3 = int(df.loc[i,"PT3"]),
+                                np3 = int(df.loc[i,"NP3"]),
+                                d3 = int(df.loc[i,"D3"]),
+                                sb3 = int(df.loc[i,"SB3"]),
+                                ft = int(df.loc[i,"FT"]),
+                                points = int(df.loc[i,"POINTS"]))
+                                
+
+            db.session.add(poss)
+            db.session.commit()   
+                
+            # elif df.loc[i,"Opp"] == game.name:
+            #     poss = poss with game.id
+            # else:
+            #     game = game
+            #     poss = poss with game.id
                 
       
             
