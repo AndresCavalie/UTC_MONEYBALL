@@ -10,10 +10,56 @@ import os
 from os.path import join, dirname, realpath
 import openpyxl
 from pathlib import Path
+from sqlalchemy import and_, or_
+from decimal import *
 
 
 
 
+@views.route('/players', methods=['GET','POST'])
+@login_required
+def players():
+    # players = db.session.query(Player).join(Search).filter(Search.user_id == User.id).all()
+    players = db.session.query(Player).all()
+    print(players)
+    fgm = []
+    fga = []
+    fgm3 = []
+    fga3 = []
+    efg = []
+    ftm = []
+    fta = []
+    for player in players:
+            getcontext().prec = 3
+            fgm_ = Decimal(db.session.query(Possession).filter(and_(Possession.shooter==player.id,Possession.result=="Make")).count())
+            fgm3_ = Decimal(db.session.query(Possession).filter(and_(Possession.shooter==player.id, Possession.result=="Make", (or_(Possession.shot=="SB3", Possession.shot=="D3", Possession.shot =="PT3", Possession.shot == "NP3")))).count())
+            fga_ = Decimal(db.session.query(Possession).filter(Possession.shooter==player.id).count())
+            if fga_ != 0:
+                
+                efg_ = ((fgm_ + (Decimal(.5)*fgm3_)) / fga_)* (Decimal(100))
+                efg.append(efg_)
+            else:
+                efg.append(None)
+            fgm.append(db.session.query(Possession).filter(and_(Possession.shooter==player.id,Possession.result=="Make")).count())
+            fga.append(db.session.query(Possession).filter(Possession.shooter==player.id).count())
+            fgm3.append(db.session.query(Possession).filter(and_(Possession.shooter==player.id, Possession.result=="Make", (or_(Possession.shot=="SB3", Possession.shot=="D3", Possession.shot =="PT3", Possession.shot == "NP3")))).count())
+            fga3.append(db.session.query(Possession).filter(and_(Possession.shooter==player.id, (or_(Possession.shot=="SB3", Possession.shot=="D3", Possession.shot =="PT3", Possession.shot == "NP3")))).count())
+            ftm.append(db.session.query(Possession).filter(and_(Possession.shooter==player.id, (or_(Possession.ftm==1, Possession.ftm ==2)))).count())
+            fta.append(db.session.query(Possession).filter(and_(Possession.shooter==player.id, (or_(Possession.fta==1, Possession.fta ==2)))).count())
+            print(fgm)
+    print(fgm)
+    return render_template("players.html",user=current_user,players=players, fgm = fgm , fga = fga, fgm3 = fgm3 , fga3 =fga3, efg=efg, ftm=ftm, fta=fta)
+
+@views.route('/games', methods=['GET','POST'])
+@login_required
+def games():
+    return render_template("home.html",user=current_user)
+
+@views.route('/triggers', methods=['GET','POST'])
+@login_required
+def triggers():
+    return render_template("home.html",user=current_user)
+    
 @views.route('/', methods=['GET','POST'])
 @login_required
 def home():
@@ -22,8 +68,6 @@ def home():
         df = pd.read_excel(sheet)
         #from one spreadsheet, create one game, and posessions with players
         playerlist = []
-        
-        
         
         game = Game(team = df.loc[0,"Opp"],date = str(df.loc[0,"Date"]) ) #, date = df.loc[i,"Date"])
         db.session.add(game)
@@ -192,11 +236,6 @@ def home():
             db.session.commit()
             db.session.add(playerlist[i])    
             db.session.commit()
-        print(playerlist) 
-      
-        print(game.players)  
-        aj = Player.query.filter_by(initials="AJ").first()
-        print(aj.games)
         return render_template("home.html",user=current_user)
     # if request.method == 'POST':
     #     searchName = request.form.get('searchNameName')

@@ -1,0 +1,18 @@
+Players
+    Basic
+        Add Player
+        Player
+
+    Shot Types
+        Add Player
+        Player
+        
+Games
+    Add Game
+
+Triggers
+
+
+
+
+
