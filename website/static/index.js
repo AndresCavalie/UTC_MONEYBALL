@@ -48,3 +48,13 @@ function enterSearch(searchId){
   });
   console.log("HIT")
 }
+
+function enterPlayer(playerId){
+  fetch("/enter-player", {
+    method: "POST",
+    body: JSON.stringify({playerId:playerId}),
+  }).then((_res) => {
+    window.location.href = "/player";
+  });
+  console.log("HIT")
+}

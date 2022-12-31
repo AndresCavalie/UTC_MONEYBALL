@@ -354,9 +354,78 @@ def delete_search():
 @views.route('/searches')
 def searches(): 
     searchid = session['search']
-    session.pop('messages', default=None)
+    # session.pop('search', default=None)
     search = Search.query.get(searchid)
     return render_template("searches.html",search=search,user=current_user)
+
+@views.route('/player')
+def player(): 
+    print("second")
+    print(session.items())
+    playerid = session['player']
+    # session.pop('player', default=None)
+    player = Player.query.get(playerid)
+
+    fgm = []
+    fga = []
+    fgm3 = []
+    fga3 = []
+    efg = []
+    ftm = []
+    fta = []
+    ftperc = []
+    assist = []
+    esq = []
+    games = player.games
+    print(games)
+    for game in games:
+        print(game.team)
+        getcontext().prec = 3
+        fgm_ = Decimal(db.session.query(Possession).filter(and_(game.id==Possession.game_id,Possession.shooter==player.id,Possession.result=="Make")).count())
+        fgm3_ = Decimal(db.session.query(Possession).filter(and_(game.id==Possession.game_id,Possession.shooter==player.id, Possession.result=="Make", (or_(Possession.shot=="SB3", Possession.shot=="D3", Possession.shot =="PT3", Possession.shot == "NP3")))).count())
+        fga_ = Decimal(db.session.query(Possession).filter(and_(game.id==Possession.game_id,Possession.shooter==player.id)).count())
+        if fga_ != 0:
+            
+            efg_ = ((fgm_ + (Decimal(.5)*fgm3_)) / fga_)* (Decimal(100))
+            efg.append(efg_)
+        else:
+            efg.append(None)
+        fgm.append(db.session.query(Possession).filter(and_(game.id==Possession.game_id,Possession.shooter==player.id,Possession.result=="Make")).count())
+        fga.append(db.session.query(Possession).filter(game.id==Possession.game_id,Possession.shooter==player.id).count())
+        fgm3.append(db.session.query(Possession).filter(and_(game.id==Possession.game_id,Possession.shooter==player.id, Possession.result=="Make", (or_(Possession.shot=="SB3", Possession.shot=="D3", Possession.shot =="PT3", Possession.shot == "NP3")))).count())
+        fga3.append(db.session.query(Possession).filter(and_(game.id==Possession.game_id,Possession.shooter==player.id, (or_(Possession.shot=="SB3", Possession.shot=="D3", Possession.shot =="PT3", Possession.shot == "NP3")))).count())
+        ftm.append(db.session.query(Possession).filter(and_(game.id==Possession.game_id,Possession.shooter==player.id, (or_(Possession.ftm==1, Possession.ftm ==2)))).count())
+        ftm_ = Decimal(db.session.query(Possession).filter(and_(game.id==Possession.game_id,Possession.shooter==player.id, (or_(Possession.ftm==1, Possession.ftm ==2)))).count())
+        fta.append(db.session.query(Possession).filter(and_(game.id==Possession.game_id,Possession.shooter==player.id, (or_(Possession.fta==1, Possession.fta ==2)))).count())
+        fta_ = Decimal(db.session.query(Possession).filter(and_(game.id==Possession.game_id,Possession.shooter==player.id, (or_(Possession.fta==1, Possession.fta ==2)))).count())
+        esq_ = db.session.query(Possession.esq).filter(and_(game.id==Possession.game_id,Possession.shooter==player.id,Possession.result=="Make")).all()
+        sum = Decimal(0)
+        for x in esq_:
+            sum += x[0]
+        esq_ = sum
+        if fga_ != 0:
+            
+            esq_ = (esq_ / fga_)#* Decimal(100)
+            esq.append(esq_)
+        else:
+            esq.append(None)
+        if fta_ != 0:
+            
+            ftperc_ = (ftm_ / fta_) * (Decimal(100))
+            ftperc.append(ftperc_)
+        else:
+            ftperc.append(None)
+            
+        assist.append(db.session.query(Possession).filter(and_(game.id==Possession.game_id,Possession.shooter==player.id,Possession.assist==1)).count())
+        
+        
+        print(fgm)
+    print(fgm)
+    
+    
+    return render_template("players copy.html",user=current_user, games = games , player=player, fgm = fgm , fga = fga, fgm3 = fgm3 , fga3 =fga3, efg=efg, ftm=ftm, fta=fta, ftperc = ftperc, assist = assist, esq = esq)
+    return render_template("players copy.html", player = player,user=current_user)
+
 
 
 @views.route('/delete-post', methods=["POST"])
@@ -379,9 +448,21 @@ def enter_search():
         searchdata = json.loads(request.data)
         searchid = searchdata['searchId']
         session['search'] = searchid
+        print(session['search'])
         search=Search.query.get(searchid)
         
         return redirect(url_for('views.searches', search=search))
+    
+@views.route('/enter-player', methods=["POST"])
+def enter_player():
+        playerdata = json.loads(request.data)
+        playerid = playerdata['playerId']
+        session['player'] = playerid
+        print("first")
+        print(session.items())
+        player=Player.query.get(playerid)
+        
+        return redirect(url_for('views.player'))
 
 
 
