@@ -36,9 +36,15 @@
       {%endif%}
     <td>{{ftm[i]}}</td>
     <td>{{fta[i]}}</td>
-    <td>Mexico</td>
-    <td>Centro comercial Moctezuma</td>
-    <td>Francisco Chang</td>
+    {%if ftperc[i] != None%}
+    <td>
+      {{ftperc[i]}}{{"%"}}</td>
+      {%else%}
+      <td>
+        {{ftperc[i]}}</td>
+      {%endif%}
+    <td>{{assist[i]}}</td>
+    <td>{{esq[i]}}</td>
   
   </tr>
   {%endfor%}

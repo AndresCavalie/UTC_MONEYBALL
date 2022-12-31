@@ -29,6 +29,9 @@ def players():
     efg = []
     ftm = []
     fta = []
+    ftperc = []
+    assist = []
+    esq = []
     for player in players:
             getcontext().prec = 3
             fgm_ = Decimal(db.session.query(Possession).filter(and_(Possession.shooter==player.id,Possession.result=="Make")).count())
@@ -45,10 +48,33 @@ def players():
             fgm3.append(db.session.query(Possession).filter(and_(Possession.shooter==player.id, Possession.result=="Make", (or_(Possession.shot=="SB3", Possession.shot=="D3", Possession.shot =="PT3", Possession.shot == "NP3")))).count())
             fga3.append(db.session.query(Possession).filter(and_(Possession.shooter==player.id, (or_(Possession.shot=="SB3", Possession.shot=="D3", Possession.shot =="PT3", Possession.shot == "NP3")))).count())
             ftm.append(db.session.query(Possession).filter(and_(Possession.shooter==player.id, (or_(Possession.ftm==1, Possession.ftm ==2)))).count())
+            ftm_ = Decimal(db.session.query(Possession).filter(and_(Possession.shooter==player.id, (or_(Possession.ftm==1, Possession.ftm ==2)))).count())
             fta.append(db.session.query(Possession).filter(and_(Possession.shooter==player.id, (or_(Possession.fta==1, Possession.fta ==2)))).count())
+            fta_ = Decimal(db.session.query(Possession).filter(and_(Possession.shooter==player.id, (or_(Possession.fta==1, Possession.fta ==2)))).count())
+            esq_ = db.session.query(Possession.esq).filter(and_(Possession.shooter==player.id,Possession.result=="Make")).all()
+            sum = Decimal(0)
+            for x in esq_:
+                sum += x[0]
+            esq_ = sum
+            if fga_ != 0:
+                
+                esq_ = (esq_ / fga_)#* Decimal(100)
+                esq.append(esq_)
+            else:
+                esq.append(None)
+            if fta_ != 0:
+                
+                ftperc_ = (ftm_ / fta_) * (Decimal(100))
+                ftperc.append(ftperc_)
+            else:
+                ftperc.append(None)
+                
+            assist.append(db.session.query(Possession).filter(and_(Possession.shooter==player.id,Possession.assist==1)).count())
+            
+            
             print(fgm)
     print(fgm)
-    return render_template("players.html",user=current_user,players=players, fgm = fgm , fga = fga, fgm3 = fgm3 , fga3 =fga3, efg=efg, ftm=ftm, fta=fta)
+    return render_template("players.html",user=current_user,players=players, fgm = fgm , fga = fga, fgm3 = fgm3 , fga3 =fga3, efg=efg, ftm=ftm, fta=fta, ftperc = ftperc, assist = assist, esq = esq)
 
 @views.route('/games', methods=['GET','POST'])
 @login_required
