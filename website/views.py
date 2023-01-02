@@ -363,6 +363,17 @@ def player():
     print("second")
     print(session.items())
     playerid = session['player']
+    fgm_s = session['fgm']
+    fga_s = session['fga']
+    fgm3_s = session['fgm3']
+    fga3_s = session['fga3']
+    efg_s = session['efg']
+    ftm_s = session['ftm']
+    fta_s = session['fta']
+    ftperc_s = session['ftperc']
+    assist_s = session['assist']
+    esq_s = session['esq']
+
     # session.pop('player', default=None)
     player = Player.query.get(playerid)
 
@@ -406,9 +417,13 @@ def player():
         if fga_ != 0:
             
             esq_ = (esq_ / fga_)#* Decimal(100)
+            
             esq.append(esq_)
         else:
             esq.append(None)
+            
+            
+            
         if fta_ != 0:
             
             ftperc_ = (ftm_ / fta_) * (Decimal(100))
@@ -423,7 +438,9 @@ def player():
     print(fgm)
     
     
-    return render_template("players copy.html",user=current_user, games = games , player=player, fgm = fgm , fga = fga, fgm3 = fgm3 , fga3 =fga3, efg=efg, ftm=ftm, fta=fta, ftperc = ftperc, assist = assist, esq = esq)
+    return render_template("players copy.html",user=current_user, games = games , player=player, fgm = fgm , fga = fga, fgm3 = fgm3 , fga3 =fga3, efg=efg, ftm=ftm, fta=fta, ftperc = ftperc, assist = assist, esq = esq,
+                           fgm_s = fgm_s , fga_s = fga_s, fgm3_s = fgm3_s , fga3_s =fga3_s, efg_s=efg_s, ftm_s=ftm_s, fta_s=fta_s, ftperc_s = ftperc_s, assist_s = assist_s, esq_s = esq_s
+                           )
     return render_template("players copy.html", player = player,user=current_user)
 
 
@@ -457,6 +474,35 @@ def enter_search():
 def enter_player():
         playerdata = json.loads(request.data)
         playerid = playerdata['playerId']
+        print("")
+        print("")
+        print("")
+        print("")
+        print("")
+        
+        fgm = playerdata['fgm']
+        print(fgm)
+        fga = playerdata['fga']
+        fgm3 = playerdata['fgm3']
+        fga3 = playerdata['fga3']
+        efg = playerdata['efg']
+        ftm = playerdata['ftm']
+        fta = playerdata['fta']
+        ftperc = playerdata['ftperc']
+        assist = playerdata['assist']
+        esq = playerdata['esq']
+        session['fgm'] = fgm
+        session['fga'] = fga
+        session['fgm3'] = fgm3
+        session['fga3'] = fga3
+        session['efg'] = efg
+        session['ftm'] = ftm
+        session['fta'] = fta
+        session['ftperc'] = ftperc
+        session['assist'] = assist
+        session['esq'] = esq
+        
+        
         session['player'] = playerid
         print("first")
         print(session.items())

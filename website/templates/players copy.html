@@ -7,7 +7,7 @@
     
 <table border = "2em">
   <tr>
-    <th>Player</th>
+    <th>Team</th>
     <th>FGM</th>
     <th>FGA</th>
     <th>3FGM</th>
@@ -48,5 +48,42 @@
   
   </tr>
   {%endfor%}
+  <tr>
+
+
+    
+    
+    <td>TOTAL</td>
+    <td>{{fgm_s}}</td>
+    <td>{{fga_s}}</td>
+    <td>{{fgm3_s}}</td>
+    <td>{{fga3_s}}</td>
+    {%if efg_s == 0%}
+    <td>None</td>
+    {%else%}
+    <td>{{efg_s}}{{"%"}}</td>
+    {%endif%}
+    <td>{{ftm_s}}</td>
+    <td>{{fta_s}}</td>
+
+    {%if ftperc_s == 0%}
+    <td>None</td>
+    {%else%}
+    <td>{{ftperc_s}}{{"%"}}</td>
+    {%endif%}
+
+
+
+    <td>{{assist_s}}</td>
+
+
+
+    {%if esq_s == 0%}
+    <td>None</td>
+    {%else%}
+    <td>{{esq_s}}</td>
+    {%endif%}
+    
+  </tr>
 </table>
 {%endblock%}

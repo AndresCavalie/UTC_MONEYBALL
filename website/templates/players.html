@@ -21,8 +21,26 @@
   </tr>
   
   {%for i in range(0,(players | length))%}
+
+    {% set efgb = 0 %}
+    {%set ftpercb = 0 %}
+    {%set esqb = 0 %}
   <tr>
-    <td><a onClick="enterPlayer({{players[i].id}})">{{players[i].name}}</a></td>
+    
+
+    {%if efg[i] != None%}
+      {%set efgb = efg[i] %}
+      {%endif%}
+
+    {%if ftperc[i] != None%}
+      {%set ftpercb = ftperc[i] %}
+      {%endif%}
+
+    {%if esq[i] != None%}
+      {%set esqb = esq[i] %}
+      {%endif%}
+      
+    <td><a onClick="enterPlayer({{players[i].id}}, {{fgm[i]}}, {{fga[i]}}, {{fgm3[i]}}, {{fga3[i]}} ,  {{efgb}} , {{ftm[i]}}, {{fta[i]}}, {{ftpercb}} ,{{assist[i]}}, {{esqb}})">{{players[i].name}}</a></td>
     <td>{{fgm[i]}}</td>
     <td>{{fga[i]}}</td>
     <td>{{fgm3[i]}}</td>

@@ -49,10 +49,10 @@ function enterSearch(searchId){
   console.log("HIT")
 }
 
-function enterPlayer(playerId){
+function enterPlayer(playerId,fgm,fga,fgm3,fga3,efg,ftm,fta,ftperc,assist,esq){
   fetch("/enter-player", {
     method: "POST",
-    body: JSON.stringify({playerId:playerId}),
+    body: JSON.stringify({playerId:playerId, fgm:fgm , fga:fga, fgm3:fgm3, fga3:fga3, efg:efg,ftm:ftm, fta:fta, ftperc:ftperc, assist:assist, esq:esq}),
   }).then((_res) => {
     window.location.href = "/player";
   });
