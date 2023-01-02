@@ -40,7 +40,7 @@
       {%set esqb = esq[i] %}
       {%endif%}
       
-    <td><a onClick="enterPlayer({{players[i].id}}, {{fgm[i]}}, {{fga[i]}}, {{fgm3[i]}}, {{fga3[i]}} ,  {{efgb}} , {{ftm[i]}}, {{fta[i]}}, {{ftpercb}} ,{{assist[i]}}, {{esqb}})">{{players[i].name}}</a></td>
+    <td><a href = ""onClick="enterPlayer({{players[i].id}}, {{fgm[i]}}, {{fga[i]}}, {{fgm3[i]}}, {{fga3[i]}} ,  {{efgb}} , {{ftm[i]}}, {{fta[i]}}, {{ftpercb}} ,{{assist[i]}}, {{esqb}})">{{players[i].name}}</a></td>
     <td>{{fgm[i]}}</td>
     <td>{{fga[i]}}</td>
     <td>{{fgm3[i]}}</td>
@@ -65,6 +65,21 @@
     <td>{{esq[i]}}</td>
   
   </tr>
+  
   {%endfor%}
+  <tr>
+    <td>Team Total</td>
+    <td>{{sum['fgm']}}</td>
+    <td>{{sum['fga']}}</td>
+    <td>{{sum['fgm3']}}</td>
+    <td>{{sum['fga3']}}</td>
+    <td>{{sum['efg']}}{{"%"}}</td>
+    <td>{{sum['ftm']}}</td>
+    <td>{{sum['fta']}}</td>
+    <td>{{sum['ftperc']}}{{"%"}}</td>
+    <td>{{sum['assist']}}</td>
+    
+    <td>{{sum['esq']}}</td>
+  </tr>
 </table>
 {%endblock%}

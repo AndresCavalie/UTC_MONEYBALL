@@ -21,7 +21,17 @@ from decimal import *
 def players():
     # players = db.session.query(Player).join(Search).filter(Search.user_id == User.id).all()
     players = db.session.query(Player).all()
-    print(players)
+    
+    fgms=0
+    fgas=0
+    fgm3s=0
+    fga3s=0
+    efgs=0
+    ftms=0
+    ftas=0
+    ftpercs=0
+    assists=0
+    esqs=0
     fgm = []
     fga = []
     fgm3 = []
@@ -41,40 +51,80 @@ def players():
                 
                 efg_ = ((fgm_ + (Decimal(.5)*fgm3_)) / fga_)* (Decimal(100))
                 efg.append(efg_)
+                efgs += efg_
             else:
-                efg.append(None)
+                efg.append(0)
             fgm.append(db.session.query(Possession).filter(and_(Possession.shooter==player.id,Possession.result=="Make")).count())
+            fgms += db.session.query(Possession).filter(and_(Possession.shooter==player.id,Possession.result=="Make")).count()
             fga.append(db.session.query(Possession).filter(Possession.shooter==player.id).count())
+            fgas += db.session.query(Possession).filter(Possession.shooter==player.id).count()
             fgm3.append(db.session.query(Possession).filter(and_(Possession.shooter==player.id, Possession.result=="Make", (or_(Possession.shot=="SB3", Possession.shot=="D3", Possession.shot =="PT3", Possession.shot == "NP3")))).count())
+            fgm3s += db.session.query(Possession).filter(and_(Possession.shooter==player.id, Possession.result=="Make", (or_(Possession.shot=="SB3", Possession.shot=="D3", Possession.shot =="PT3", Possession.shot == "NP3")))).count()
             fga3.append(db.session.query(Possession).filter(and_(Possession.shooter==player.id, (or_(Possession.shot=="SB3", Possession.shot=="D3", Possession.shot =="PT3", Possession.shot == "NP3")))).count())
+            fga3s += db.session.query(Possession).filter(and_(Possession.shooter==player.id, (or_(Possession.shot=="SB3", Possession.shot=="D3", Possession.shot =="PT3", Possession.shot == "NP3")))).count()
             ftm.append(db.session.query(Possession).filter(and_(Possession.shooter==player.id, (or_(Possession.ftm==1, Possession.ftm ==2)))).count())
             ftm_ = Decimal(db.session.query(Possession).filter(and_(Possession.shooter==player.id, (or_(Possession.ftm==1, Possession.ftm ==2)))).count())
+            ftms += ftm_
             fta.append(db.session.query(Possession).filter(and_(Possession.shooter==player.id, (or_(Possession.fta==1, Possession.fta ==2)))).count())
+            
             fta_ = Decimal(db.session.query(Possession).filter(and_(Possession.shooter==player.id, (or_(Possession.fta==1, Possession.fta ==2)))).count())
+            ftas += fta_
             esq_ = db.session.query(Possession.esq).filter(and_(Possession.shooter==player.id,Possession.result=="Make")).all()
+            getcontext().prec = 5
             sum = Decimal(0)
             for x in esq_:
-                sum += x[0]
+                sum = sum + Decimal(x[0])
+                
+                if player.name == "Demetrius Davis":
+                    
+                    print(Decimal(x[0]))
+            if player.name == "Demetrius Davis":
+                
+                print(sum)
             esq_ = sum
+            
+            getcontext().prec = 3
             if fga_ != 0:
                 
                 esq_ = (esq_ / fga_)#* Decimal(100)
                 esq.append(esq_)
+                esqs += esq_
+                
             else:
-                esq.append(None)
+                esq.append(0)
             if fta_ != 0:
                 
                 ftperc_ = (ftm_ / fta_) * (Decimal(100))
                 ftperc.append(ftperc_)
+                ftpercs += ftperc_
             else:
-                ftperc.append(None)
+                ftperc.append(0)
                 
             assist.append(db.session.query(Possession).filter(and_(Possession.shooter==player.id,Possession.assist==1)).count())
+            assists += db.session.query(Possession).filter(and_(Possession.shooter==player.id,Possession.assist==1)).count()
             
-            
-            print(fgm)
-    print(fgm)
-    return render_template("players.html",user=current_user,players=players, fgm = fgm , fga = fga, fgm3 = fgm3 , fga3 =fga3, efg=efg, ftm=ftm, fta=fta, ftperc = ftperc, assist = assist, esq = esq)
+    
+    
+    efgs = efgs / Decimal(len(players))
+    ftpercs = ftpercs / Decimal(len(players))
+    # getcontext().prec = 6
+    print("ESQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQ")
+    print(esqs)
+    esqs = esqs / Decimal(len(players))
+    
+    sum = {'fgm': fgms,
+           'fga': fgas,
+           'fgm3': fgm3s,
+           'fga3': fga3s,
+           'efg': efgs,
+           'ftm': ftms,
+           'fta': ftas,
+           'ftperc': ftpercs,
+           'assist': assists,
+           'esq': esqs
+           }      
+    
+    return render_template("players.html",user=current_user,players=players, fgm = fgm , fga = fga, fgm3 = fgm3 , fga3 =fga3, efg=efg, ftm=ftm, fta=fta, ftperc = ftperc, assist = assist, esq = esq , sum=sum)
 
 @views.route('/games', methods=['GET','POST'])
 @login_required
@@ -399,7 +449,7 @@ def player():
             efg_ = ((fgm_ + (Decimal(.5)*fgm3_)) / fga_)* (Decimal(100))
             efg.append(efg_)
         else:
-            efg.append(None)
+            efg.append(0)
         fgm.append(db.session.query(Possession).filter(and_(game.id==Possession.game_id,Possession.shooter==player.id,Possession.result=="Make")).count())
         fga.append(db.session.query(Possession).filter(game.id==Possession.game_id,Possession.shooter==player.id).count())
         fgm3.append(db.session.query(Possession).filter(and_(game.id==Possession.game_id,Possession.shooter==player.id, Possession.result=="Make", (or_(Possession.shot=="SB3", Possession.shot=="D3", Possession.shot =="PT3", Possession.shot == "NP3")))).count())
@@ -412,25 +462,28 @@ def player():
         sum = Decimal(0)
         for x in esq_:
             sum += Decimal(x[0])
+           
+            if player.name == "Demetrius Davis":
+                    
+                    print(Decimal(x[0]))
+        if player.name == "Demetrius Davis":
+            
+            print(sum)
+            
         esq_ = sum
-        print("")
-        print("")
-        print("")
-        print("")
-        print("")
-        print("")
-        print(player.name)
         
-        print(sum)
         
-        print(fga_)
+        
+        
+        
+        
         if fga_ != 0:
             
             esq_ = (esq_ / fga_)#* Decimal(100)
             
             esq.append(esq_)
         else:
-            esq.append(None)
+            esq.append(0)
             
             
             
@@ -439,7 +492,7 @@ def player():
             ftperc_ = (ftm_ / fta_) * (Decimal(100))
             ftperc.append(ftperc_)
         else:
-            ftperc.append(None)
+            ftperc.append(0)
             
         assist.append(db.session.query(Possession).filter(and_(game.id==Possession.game_id,Possession.shooter==player.id,Possession.assist==1)).count())
         
@@ -483,11 +536,7 @@ def enter_search():
 def enter_player():
         playerdata = json.loads(request.data)
         playerid = playerdata['playerId']
-        print("")
-        print("")
-        print("")
-        print("")
-        print("")
+        
         
         fgm = playerdata['fgm']
         print(fgm)
