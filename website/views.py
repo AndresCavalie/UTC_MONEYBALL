@@ -187,21 +187,21 @@ def home():
                 p3 = p3.id
                 
             
-            print("p4")    
+          
             p4 = (df.loc[i, "P4"])
             if p4 == p4:
                 p4 = Player.query.filter_by(number=p4).first()
-                print(p4)
+              
                 if p4 not in playerlist:
                     playerlist.append(p4)
                 p4 = p4.id
                 
             
-            print("p5")
+           
             p5 = (df.loc[i, "P5"])
             if p5 == p5:
                 p5 = Player.query.filter_by(number=p5).first()
-                print(p5)
+                
                 if p5 not in playerlist:
                     playerlist.append(p5)
                 p5 = p5.id
@@ -335,7 +335,7 @@ def delete_search():
     searchId = search['searchId']
     search = Search.query.get(searchId)
     if search:
-        print('found')
+  
         if search.user_id == current_user.id:
             for post in search.posts:
                 db.session.delete(post)
@@ -343,7 +343,7 @@ def delete_search():
             db.session.delete(search)
             
             db.session.commit()
-    print('NOT')
+ 
     return jsonify({})
 
 
@@ -360,8 +360,7 @@ def searches():
 
 @views.route('/player')
 def player(): 
-    print("second")
-    print(session.items())
+   
     playerid = session['player']
     fgm_s = session['fgm']
     fga_s = session['fga']
@@ -388,9 +387,9 @@ def player():
     assist = []
     esq = []
     games = player.games
-    print(games)
+  
     for game in games:
-        print(game.team)
+       
         getcontext().prec = 3
         fgm_ = Decimal(db.session.query(Possession).filter(and_(game.id==Possession.game_id,Possession.shooter==player.id,Possession.result=="Make")).count())
         fgm3_ = Decimal(db.session.query(Possession).filter(and_(game.id==Possession.game_id,Possession.shooter==player.id, Possession.result=="Make", (or_(Possession.shot=="SB3", Possession.shot=="D3", Possession.shot =="PT3", Possession.shot == "NP3")))).count())
@@ -412,8 +411,19 @@ def player():
         esq_ = db.session.query(Possession.esq).filter(and_(game.id==Possession.game_id,Possession.shooter==player.id,Possession.result=="Make")).all()
         sum = Decimal(0)
         for x in esq_:
-            sum += x[0]
+            sum += Decimal(x[0])
         esq_ = sum
+        print("")
+        print("")
+        print("")
+        print("")
+        print("")
+        print("")
+        print(player.name)
+        
+        print(sum)
+        
+        print(fga_)
         if fga_ != 0:
             
             esq_ = (esq_ / fga_)#* Decimal(100)
@@ -434,8 +444,7 @@ def player():
         assist.append(db.session.query(Possession).filter(and_(game.id==Possession.game_id,Possession.shooter==player.id,Possession.assist==1)).count())
         
         
-        print(fgm)
-    print(fgm)
+        
     
     
     return render_template("players copy.html",user=current_user, games = games , player=player, fgm = fgm , fga = fga, fgm3 = fgm3 , fga3 =fga3, efg=efg, ftm=ftm, fta=fta, ftperc = ftperc, assist = assist, esq = esq,
@@ -452,11 +461,11 @@ def delete_post():
     post = Post.query.get(postId)
     search=Search.query.get(post.search_id)
     if post:
-        print('found')
+   
         if search.user_id == current_user.id:
             db.session.delete(post)
             db.session.commit()
-    print('NOT')
+    
     return jsonify({})
 
 
@@ -465,7 +474,7 @@ def enter_search():
         searchdata = json.loads(request.data)
         searchid = searchdata['searchId']
         session['search'] = searchid
-        print(session['search'])
+       
         search=Search.query.get(searchid)
         
         return redirect(url_for('views.searches', search=search))
