@@ -1,0 +1,39 @@
+{%extends "base.html"%} {% block title%}Home{%endblock%} {%block content%}
+</br>
+<h1 align="center">Player View</h1>
+<h3 align="center">UTC MENS BASKETBALL</h3>
+
+
+    
+<table border = "2em">
+  <tr>
+    <th>Player</th>
+    <th>FGM</th>
+    <th>FGA</th>
+    <th>3FGM</th>
+    <th>3FGA</th>
+    <th>eFG%</th>
+    <th>FTM</th>
+    <th>FTA</th>
+    <th>FT%</th>
+    <th>Assist +</th>
+    <th>ESQ Avg</th>
+  </tr>
+  
+  {%for i in range(0,(players | length))%}
+
+   
+  <tr>
+    
+
+    <td><a href = ""onClick="enterPlayer({{players[i].id}})">{{players[i].name}}</a></td>
+    <td>{{data[0][0][i]}}</td>
+   
+  </tr>
+  
+  {%endfor%}
+  <tr>
+    <td>{{s_rim2}}</td>
+  </tr>
+</table>
+{%endblock%}

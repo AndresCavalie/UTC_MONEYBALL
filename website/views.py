@@ -14,11 +14,9 @@ from sqlalchemy import and_, or_
 from decimal import *
 
 
-
-
-@views.route('/players', methods=['GET','POST'])
+@views.route('/basic_player', methods=['GET','POST'])
 @login_required
-def players():
+def basic_player():
     # players = db.session.query(Player).join(Search).filter(Search.user_id == User.id).all()
     players = db.session.query(Player).all()
     
@@ -124,7 +122,120 @@ def players():
            'esq': esqs
            }      
     
-    return render_template("players.html",user=current_user,players=players, fgm = fgm , fga = fga, fgm3 = fgm3 , fga3 =fga3, efg=efg, ftm=ftm, fta=fta, ftperc = ftperc, assist = assist, esq = esq , sum=sum)
+    return render_template("basic_player.html",user=current_user,players=players, fgm = fgm , fga = fga, fgm3 = fgm3 , fga3 =fga3, efg=efg, ftm=ftm, fta=fta, ftperc = ftperc, assist = assist, esq = esq , sum=sum)
+
+@views.route('/shot_types', methods=['GET','POST'])
+@login_required
+def shot_types():
+    # players = db.session.query(Player).join(Search).filter(Search.user_id == User.id).all()
+    players = db.session.query(Player).all()
+    
+    s_shotlist = 0
+    s_shotlist_shooters = 0
+    
+    s_postmove2 = 0
+    s_postmove2_shooters_shooters = 0
+    
+    s_paint2 = 0
+    s_paint2_shooters = 0
+    
+    s_nonpaint2 = 0
+    s_nonpaint2_shooters = 0
+    
+    s_dribble3 = 0
+    s_dribble3_shooters = 0
+    
+    s_stopbehind3 = 0
+    s_stopbehind3_shooters = 0
+    
+    s_nonpaint3 = 0
+    s_nonpaint3_shooters = 0
+    
+    s_painttouch3 = 0
+    s_painttouch3_shooters = 0
+    
+    s_open3 = 0
+    s_open3_shooters = 0
+    
+    s_csjumper = 0
+    s_csjumper_shooters = 0
+    
+    s_assisted = 0
+    s_assisted_shooters = 0
+    
+    shotlist = []
+    postmove2 = []
+    paint2 = []
+    nonpaint2 = []
+    dribble3 = []
+    stopbehind3 = []
+    nonpaint3 = []
+    painttouch3 = []
+    open3 = []
+    csjumper = []
+    assisted = []
+    
+    shot_type_list = []
+    shot_name_list = []
+    
+    shot_type_list.append(shotlist)
+    shot_name_list.append("R2")
+    shot_type_list.append(postmove2)
+    shot_name_list.append("PM2")
+    shot_type_list.append(paint2)
+    shot_name_list.append("PT2")
+    shot_type_list.append(nonpaint2)
+    shot_name_list.append("NP2")
+    shot_type_list.append(dribble3)
+    shot_name_list.append("D3")
+    shot_type_list.append(stopbehind3)
+    shot_name_list.append("SB3")
+    shot_type_list.append(nonpaint3)
+    shot_name_list.append("NP3")
+    shot_type_list.append(painttouch3)
+    shot_name_list.append("PT3")
+    
+    data = []
+    for i in range(len(shot_type_list)):
+        shot = shot_name_list[i]
+        shotlist = []
+        shootersum = 0
+        totalshooters = 0
+        for player in players:
+            getcontext().prec = 6
+            make = Decimal(db.session.query(Possession).filter(and_(Possession.shooter==player.id,Possession.result=="Make",Possession.shot==shot)).count())
+            miss = Decimal(db.session.query(Possession).filter(and_(Possession.shooter==player.id,Possession.result=="Miss",Possession.shot==shot)).count())
+            if (make+miss)!=0:
+                
+                perc = make/(make+miss)*Decimal(100)
+                getcontext().prec = 4
+                perc_round = perc+Decimal(0)
+                shotlist.append(str(perc_round)+"%")
+                shootersum += perc
+                totalshooters += 1
+            else:
+                shotlist.append("-")
+                
+
+        getcontext().prec = 4
+        if totalshooters != 0:
+            shootersum = Decimal(shootersum)/Decimal(totalshooters)
+            shootersum = str(shootersum)+"%"
+        datainner = []
+        datainner.append(shotlist)
+        datainner.append(shootersum)
+        
+        data.append(datainner)  
+        
+        
+    
+    
+    
+    
+    return render_template("shot_types.html",
+                           user=current_user,
+                           players=players,
+                           data=data)
 
 @views.route('/games', methods=['GET','POST'])
 @login_required
@@ -396,11 +507,6 @@ def delete_search():
  
     return jsonify({})
 
-
-
-
-
-
 @views.route('/searches')
 def searches(): 
     searchid = session['search']
@@ -408,8 +514,8 @@ def searches():
     search = Search.query.get(searchid)
     return render_template("searches.html",search=search,user=current_user)
 
-@views.route('/player')
-def player(): 
+@views.route('/basic_player_single')
+def basic_player_single(): 
    
     playerid = session['player']
     fgm_s = session['fgm']
@@ -500,12 +606,9 @@ def player():
         
     
     
-    return render_template("players copy.html",user=current_user, games = games , player=player, fgm = fgm , fga = fga, fgm3 = fgm3 , fga3 =fga3, efg=efg, ftm=ftm, fta=fta, ftperc = ftperc, assist = assist, esq = esq,
+    return render_template("basic_player_single.html",user=current_user, games = games , player=player, fgm = fgm , fga = fga, fgm3 = fgm3 , fga3 =fga3, efg=efg, ftm=ftm, fta=fta, ftperc = ftperc, assist = assist, esq = esq,
                            fgm_s = fgm_s , fga_s = fga_s, fgm3_s = fgm3_s , fga3_s =fga3_s, efg_s=efg_s, ftm_s=ftm_s, fta_s=fta_s, ftperc_s = ftperc_s, assist_s = assist_s, esq_s = esq_s
                            )
-    return render_template("players copy.html", player = player,user=current_user)
-
-
 
 @views.route('/delete-post', methods=["POST"])
 def delete_post():
@@ -521,7 +624,6 @@ def delete_post():
     
     return jsonify({})
 
-
 @views.route('/enter-search', methods=["POST"])
 def enter_search():
         searchdata = json.loads(request.data)
@@ -532,8 +634,8 @@ def enter_search():
         
         return redirect(url_for('views.searches', search=search))
     
-@views.route('/enter-player', methods=["POST"])
-def enter_player():
+@views.route('/enter_basic_player_single', methods=["POST"])
+def enter_basic_player_single():
         playerdata = json.loads(request.data)
         playerid = playerdata['playerId']
         
@@ -566,7 +668,7 @@ def enter_player():
         print(session.items())
         player=Player.query.get(playerid)
         
-        return redirect(url_for('views.player'))
+        return redirect(url_for('views.basic_player_single'))
 
 
 

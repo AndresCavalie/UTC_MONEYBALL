@@ -50,11 +50,11 @@ function enterSearch(searchId){
 }
 
 function enterPlayer(playerId,fgm,fga,fgm3,fga3,efg,ftm,fta,ftperc,assist,esq){
-  fetch("/enter-player", {
+  fetch("/enter_basic_player_single", {
     method: "POST",
     body: JSON.stringify({playerId:playerId, fgm:fgm , fga:fga, fgm3:fgm3, fga3:fga3, efg:efg,ftm:ftm, fta:fta, ftperc:ftperc, assist:assist, esq:esq}),
   }).then((_res) => {
-    window.location.href = "/player";
+    window.location.href = "/basic_player_single";
   });
   console.log("HIT")
 }
