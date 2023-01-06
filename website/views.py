@@ -293,21 +293,14 @@ def shot_types():
 @login_required
 def shot_types_single():
     
-    playerid = session['player']
-    player = Player.query.get(playerid)
-    players = db.session.query(Player).all()
     
-    shot_name_list = []
-    
-    shot_name_list.append("R2")
-    shot_name_list.append("PM2")
-    shot_name_list.append("PT2")
-    shot_name_list.append("NP2")
-    shot_name_list.append("D3")
-    shot_name_list.append("SB3")
-    shot_name_list.append("NP3")
-    shot_name_list.append("PT3")
     # 3 is added to the loop for the three types of shots whose queries do not follow same format
+    
+    #stat_list = ['0: poss','1: chances','2: fgm-fga','3: 3fgm','4: ftm-fta','5: assist','6: open 3','7: c&sjumper','8: poss length', '9: tag %','10: trigger time', '11: bolt time' , '12: paint time', '13: Poss with paint time', '14: Post ups', '15: total passes', '16: passes/poss','17: avg touches']
+    
+    
+    
+    
     
     shot_players = []
     shot_sums = []
@@ -364,7 +357,40 @@ def shot_types_single():
 @views.route('/games', methods=['GET','POST'])
 @login_required
 def games():
-    return render_template("home.html",user=current_user)
+    
+    games = db.session.query(Game).all()
+    
+    
+    for i in range(len(games)):
+        game_stats = []
+        
+        poss = Decimal(db.session.query(Possession).filter(and_(Possession.poss==1,Possession.game_id==games[i].id)).count())
+        
+        if poss != 0:
+            game_stats.append(poss)
+        else:
+            game_stats.append('-')
+        
+        
+        
+        
+        poss_zero = Decimal(db.session.query(Possession).filter(and_(Possession.poss==1,Possession.game_id==games[i].id)).count())
+        
+        if poss_zero+poss != 0:
+            game_stats.append(poss_zero+poss)
+        else:
+            game_stats.append('-')
+            
+        
+        
+        
+        
+        
+        
+        
+        
+    return render_template("games.html", user=current_user, players=players, stats = shot_players, sums = shot_sums, sq = sq_points , tp = total_points, sqper = sq_per,tpper = tp_per)
+
 
 @views.route('/triggers', methods=['GET','POST'])
 @login_required

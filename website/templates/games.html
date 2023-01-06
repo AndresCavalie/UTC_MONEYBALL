@@ -1,0 +1,73 @@
+{%extends "base.html"%} {% block title%}Home{%endblock%} {%block content%}
+</br>
+<h1 align="center">UTC MENS BASKETBALL</h1>
+<h3 align="center">Player Shot Types</h3>
+
+
+
+    
+<table border = "2em">
+  <tr>
+    <th></th>
+    <th>Poss</th>
+    <th>Chances</th>
+    <th>FGM-FGA</th>
+    <th>3FGM-3FGA</th>
+    <th>FTM-FTA</th>
+    <th>Assist +</th>
+    <th>Open 3</th>
+    <th>C&#38;S Jumper</th>
+    <th>Poss Length</th>
+    <th>Tag %</th>
+    <th>Trigger Time</th>
+    <th>Bolt Time</th>
+    <th>Paint Time</th>
+    <th>Poss with Paint Touch</th>
+    <th>Post Ups</th>
+    <th>Total Passes</th>
+    <th>Passes / Poss</th>
+    <th>Avg Touches</th>
+  </tr>
+  
+  {%for i in range(0,(games | length))%}
+
+   
+  <tr>
+    
+    <td><a href = "" onClick="enterPlayer({{games[i].id}})">{{games[i].name}}</a></td>
+    {%for j in range(0,(stats | length))%}
+    <td>{{stats[j][i]}}</td>
+    {%endfor%}
+
+   
+  </tr>
+  
+  {%endfor%}
+  <tr>
+    <td>Total</td>
+    {%for i in range(0,(sums | length))%}
+    <td>{{sums[i]}}</td>
+    {%endfor%}
+  </tr>
+</table>
+</br>
+</br>
+</br>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+{%endblock%}
