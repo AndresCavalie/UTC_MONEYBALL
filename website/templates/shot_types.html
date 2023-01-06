@@ -95,7 +95,7 @@
       
   
       <td>FGM/A %</td>
-      {%for i in range(0,(stats | length))%}
+      {%for i in range(0,(sums | length))%}
     <td>{{sums[i]}}</td>
     {%endfor%}
   
@@ -105,63 +105,35 @@
     
     <tr>
       <td>SQ Points</td>
-      <td>{{sums[0]}}</td>
-      <td>{{sums[1]}}</td>
-      <td>{{sums[2]}}</td>
-      <td>{{sums[3]}}</td>
-      <td>{{sums[4]}}</td>
-      <td>{{sums[5]}}</td>
-      <td>{{sums[6]}}</td>
-      <td>{{sums[7]}}</td>
-      <td>{{sums[8]}}</td>
-      <td>{{sums[9]}}</td>
-      <td>{{sums[10]}}</td>
+      {%for i in range(0,(sq | length))%}
+    <td>{{sq[i]}}</td>
+    {%endfor%}
     </tr>
 
     <tr>
         <td>Total Points</td>
-        <td>{{sums[0]}}</td>
-        <td>{{sums[1]}}</td>
-        <td>{{sums[2]}}</td>
-        <td>{{sums[3]}}</td>
-        <td>{{sums[4]}}</td>
-        <td>{{sums[5]}}</td>
-        <td>{{sums[6]}}</td>
-        <td>{{sums[7]}}</td>
-        <td>{{sums[8]}}</td>
-        <td>{{sums[9]}}</td>
-        <td>{{sums[10]}}</td>
+        {%for i in range(0,(tp | length))%}
+    <td>{{tp[i]}}</td>
+    {%endfor%}
       </tr>
     
       <tr>
         <td> SQ Points per Shot</td>
-        <td>{{sums[0]}}</td>
-        <td>{{sums[1]}}</td>
-        <td>{{sums[2]}}</td>
-        <td>{{sums[3]}}</td>
-        <td>{{sums[4]}}</td>
-        <td>{{sums[5]}}</td>
-        <td>{{sums[6]}}</td>
-        <td>{{sums[7]}}</td>
-        <td>{{sums[8]}}</td>
-        <td>{{sums[9]}}</td>
-        <td>{{sums[10]}}</td>
+        {%for i in range(0,(sqper | length))%}
+    <td>{{sqper[i]}}</td>
+    {%endfor%}
       </tr>
 
       <tr>
         <td> True Points per Shot</td>
-        <td>{{sums[0]}}</td>
-        <td>{{sums[1]}}</td>
-        <td>{{sums[2]}}</td>
-        <td>{{sums[3]}}</td>
-        <td>{{sums[4]}}</td>
-        <td>{{sums[5]}}</td>
-        <td>{{sums[6]}}</td>
-        <td>{{sums[7]}}</td>
-        <td>{{sums[8]}}</td>
-        <td>{{sums[9]}}</td>
-        <td>{{sums[10]}}</td>
+        {%for i in range(0,(sqper | length))%}
+    <td>{{tpper[i]}}</td>
+    {%endfor%}
       </tr>
     
   </table>
+</br>
+</br>
+</br>
+</br>
 {%endblock%}

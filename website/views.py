@@ -128,7 +128,7 @@ def basic_player():
 @login_required
 def shot_types():
     players = db.session.query(Player).all()
-    
+    games = db.session.query(Game).all()
     shot_name_list = []
     
     shot_name_list.append("R2")
@@ -143,27 +143,98 @@ def shot_types():
     
     shot_players = []
     shot_sums = []
+    sq_points = []
+    total_points = []
+    sq_per = []
+    tp_per = []
     for i in range(len(shot_name_list)+3):
+        
         if i<8:
             shot = shot_name_list[i]
         shotlist = []
         shootersum = 0
         totalshooters = 0
+        first_run = True
         for player in players:
             getcontext().prec = 6
             
             if i<8:
                 make = Decimal(db.session.query(Possession).filter(and_(Possession.shooter==player.id,Possession.result=="Make",Possession.shot==shot)).count())
                 miss = Decimal(db.session.query(Possession).filter(and_(Possession.shooter==player.id,Possession.result=="Miss",Possession.shot==shot)).count())
+                if first_run:
+                    first_run = False
+                    
+                    #SQ POINTS TOTAL
+                    sq = db.session.query(Possession.esq).filter(and_((or_(Possession.result=="Miss",Possession.result=="Make")),Possession.shot==shot)).all()
+                    totalsq = Decimal(0)
+                    for x in sq:
+                        totalsq += Decimal(x[0])
+                    sq_points.append(totalsq)
+                    
+                    pts = db.session.query(Possession.points).filter(and_((or_(Possession.result=="Miss",Possession.result=="Make")),Possession.shot==shot)).all()
+                    totalpts = Decimal(0)
+                    for x in pts:
+                        totalpts += Decimal(x[0])
+                    total_points.append(totalpts)
+            
+                
+                    
             if i == 8:
                 make = Decimal(db.session.query(Possession).filter(and_(Possession.shooter==player.id,Possession.result=="Make",Possession.open3==1)).count())
                 miss = Decimal(db.session.query(Possession).filter(and_(Possession.shooter==player.id,Possession.result=="Miss",Possession.open3==1)).count())
+                if first_run:
+                    first_run = False
+                    
+                    #SQ POINTS TOTAL
+                    sq = db.session.query(Possession.esq).filter(and_((or_(Possession.result=="Miss",Possession.result=="Make")),Possession.open3==1)).all()
+                    totalsq = Decimal(0)
+                    for x in sq:
+                        totalsq += Decimal(x[0])
+                    sq_points.append(totalsq)
+                    
+                    pts = db.session.query(Possession.points).filter(and_((or_(Possession.result=="Miss",Possession.result=="Make")),Possession.open3==1)).all()
+                    totalpts = Decimal(0)
+                    for x in pts:
+                        totalpts += Decimal(x[0])
+                    total_points.append(totalpts)
             if i == 9:
                 make = Decimal(db.session.query(Possession).filter(and_(Possession.shooter==player.id,Possession.result=="Make",Possession.csjumper==1)).count())
                 miss = Decimal(db.session.query(Possession).filter(and_(Possession.shooter==player.id,Possession.result=="Miss",Possession.csjumper==1)).count())
+                if first_run:
+                    first_run = False
+                    
+                    #SQ POINTS TOTAL
+                    sq = db.session.query(Possession.esq).filter(and_((or_(Possession.result=="Miss",Possession.result=="Make")),Possession.csjumper==1)).all()
+                    totalsq = Decimal(0)
+                    for x in sq:
+                        totalsq += Decimal(x[0])
+                    sq_points.append(totalsq)
+                    
+                    pts = db.session.query(Possession.points).filter(and_((or_(Possession.result=="Miss",Possession.result=="Make")),Possession.csjumper==1)).all()
+                    totalpts = Decimal(0)
+                    for x in pts:
+                        totalpts += Decimal(x[0])
+                    total_points.append(totalpts)
             if i == 10:
                 make = Decimal(db.session.query(Possession).filter(and_(Possession.shooter==player.id,Possession.result=="Make",Possession.assist==1)).count())
                 miss = Decimal(db.session.query(Possession).filter(and_(Possession.shooter==player.id,Possession.result=="Miss",Possession.assist==1)).count())
+                if first_run:
+                    first_run = False
+                    
+                    #SQ POINTS TOTAL
+                    sq = db.session.query(Possession.esq).filter(and_((or_(Possession.result=="Miss",Possession.result=="Make")),Possession.assist==1)).all()
+                    totalsq = Decimal(0)
+                    for x in sq:
+                        totalsq += Decimal(x[0])
+                    sq_points.append(totalsq)
+                    
+                    pts = db.session.query(Possession.points).filter(and_((or_(Possession.result=="Miss",Possession.result=="Make")),Possession.assist==1)).all()
+                    totalpts = Decimal(0)
+                    for x in pts:
+                        totalpts += Decimal(x[0])
+                    total_points.append(totalpts)
+                    
+                    
             if (make+miss)!=0:
                 
                 perc = make /(make+miss)*Decimal(100)
@@ -175,16 +246,48 @@ def shot_types():
             else:
                 shotlist.append("-")
                 
-
+        
         getcontext().prec = 4
         if totalshooters != 0:
             shootersum = Decimal(shootersum)/Decimal(totalshooters)
-            shootersum = str(shootersum)+"%"
+            shootersum_str = str(shootersum)+"%"
+        else:
+            shootersum_str = "-"
         
         shot_players.append(shotlist)
-        shot_sums.append(shootersum)
+        shot_sums.append(shootersum_str)
         
-    return render_template("shot_types.html", user=current_user, players=players, stats = shot_players, sums = shot_sums)
+        
+        
+        
+        if shootersum != 0:
+            
+            getcontext().prec = 6
+            print(i)
+            print(totalsq)
+            print(shootersum)
+            sq_per_num = totalsq/shootersum
+            getcontext().prec = 2
+            sq_per_num_round = sq_per_num + Decimal(0)
+            sq_per.append(str(sq_per_num_round)) #ADD OR REMOVE PERCENT?
+            
+            
+            getcontext().prec = 6
+            tp_per_num = totalpts/shootersum
+            getcontext().prec = 2
+            tp_per_num_round = tp_per_num + Decimal(0)
+            tp_per.append(str(tp_per_num_round)) #ADD OR REMOVE PERCENT?
+            
+        else:
+            sq_per.append('-')
+            tp_per.append('-')
+            
+            
+        
+        
+    print(shot_sums)
+        
+    return render_template("shot_types.html", user=current_user, players=players, stats = shot_players, sums = shot_sums, sq = sq_points , tp = total_points, sqper = sq_per,tpper = tp_per)
 
 @views.route('/shot_types_single', methods=['GET','POST'])
 @login_required
