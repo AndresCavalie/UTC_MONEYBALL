@@ -1,0 +1,62 @@
+{%extends "base.html"%} {% block title%}Home{%endblock%} {%block content%}
+</br>
+<h1 align="center">Player View</h1>
+<h3 align="center">UTC MENS BASKETBALL</h3>
+
+
+    
+<table border = "2em">
+  <tr>
+    <th>Player</th>
+    <th>Rim 2</th>
+    <th>Post Move 2</th>
+    <th>Paint 2</th>
+    <th>Non-Paint 2</th>
+    <th>Dribble 3</th>
+    <th>Stop-Behind 3</th>
+    <th>Non-Paint 3</th>
+    <th>Paint Touch 3</th>
+    <th>Open 3</th>
+    <th>C&#38;S Jumper</th>
+    <th>Assisted</th>
+  </tr>
+  
+  {%for i in range(0,(games | length))%}
+
+   
+  <tr>
+    
+
+    <td><a href = ""onClick="enterPlayer({{games[i].id}})">{{games[i].team}} {{games[i].date}}</a></td>
+    <td>{{stats[0][i]}}</td>
+    <td>{{stats[1][i]}}</td>
+    <td>{{stats[2][i]}}</td>
+    <td>{{stats[3][i]}}</td>
+    <td>{{stats[4][i]}}</td>
+    <td>{{stats[5][i]}}</td>
+    <td>{{stats[6][i]}}</td>
+    <td>{{stats[7][i]}}</td>
+    <td>{{stats[8][i]}}</td>
+    <td>{{stats[9][i]}}</td>
+    <td>{{stats[10][i]}}</td>
+
+   
+  </tr>
+  
+  {%endfor%}
+  <tr>
+    <td>Totals</td>
+    <td>{{sums[0]}}</td>
+    <td>{{sums[1]}}</td>
+    <td>{{sums[2]}}</td>
+    <td>{{sums[3]}}</td>
+    <td>{{sums[4]}}</td>
+    <td>{{sums[5]}}</td>
+    <td>{{sums[6]}}</td>
+    <td>{{sums[7]}}</td>
+    <td>{{sums[8]}}</td>
+    <td>{{sums[9]}}</td>
+    <td>{{sums[10]}}</td>
+  </tr>
+</table>
+{%endblock%}

@@ -49,7 +49,19 @@ function enterSearch(searchId){
   console.log("HIT")
 }
 
-function enterPlayer(playerId,fgm,fga,fgm3,fga3,efg,ftm,fta,ftperc,assist,esq){
+function enterPlayer(playerId){
+  fetch("/enter_shot_types_single", {
+    method: "POST",
+    body: JSON.stringify({playerId:playerId}),
+  })
+  
+  .then((_res) => {
+    window.location.href = "/shot_types_single";
+  });
+  console.log("HIT")
+}
+
+function enterPlayerdep(playerId,fgm,fga,fgm3,fga3,efg,ftm,fta,ftperc,assist,esq){
   fetch("/enter_basic_player_single", {
     method: "POST",
     body: JSON.stringify({playerId:playerId, fgm:fgm , fga:fga, fgm3:fgm3, fga3:fga3, efg:efg,ftm:ftm, fta:fta, ftperc:ftperc, assist:assist, esq:esq}),

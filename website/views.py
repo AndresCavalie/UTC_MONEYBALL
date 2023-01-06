@@ -127,87 +127,46 @@ def basic_player():
 @views.route('/shot_types', methods=['GET','POST'])
 @login_required
 def shot_types():
-    # players = db.session.query(Player).join(Search).filter(Search.user_id == User.id).all()
     players = db.session.query(Player).all()
     
-    s_shotlist = 0
-    s_shotlist_shooters = 0
-    
-    s_postmove2 = 0
-    s_postmove2_shooters_shooters = 0
-    
-    s_paint2 = 0
-    s_paint2_shooters = 0
-    
-    s_nonpaint2 = 0
-    s_nonpaint2_shooters = 0
-    
-    s_dribble3 = 0
-    s_dribble3_shooters = 0
-    
-    s_stopbehind3 = 0
-    s_stopbehind3_shooters = 0
-    
-    s_nonpaint3 = 0
-    s_nonpaint3_shooters = 0
-    
-    s_painttouch3 = 0
-    s_painttouch3_shooters = 0
-    
-    s_open3 = 0
-    s_open3_shooters = 0
-    
-    s_csjumper = 0
-    s_csjumper_shooters = 0
-    
-    s_assisted = 0
-    s_assisted_shooters = 0
-    
-    shotlist = []
-    postmove2 = []
-    paint2 = []
-    nonpaint2 = []
-    dribble3 = []
-    stopbehind3 = []
-    nonpaint3 = []
-    painttouch3 = []
-    open3 = []
-    csjumper = []
-    assisted = []
-    
-    shot_type_list = []
     shot_name_list = []
     
-    shot_type_list.append(shotlist)
     shot_name_list.append("R2")
-    shot_type_list.append(postmove2)
     shot_name_list.append("PM2")
-    shot_type_list.append(paint2)
     shot_name_list.append("PT2")
-    shot_type_list.append(nonpaint2)
     shot_name_list.append("NP2")
-    shot_type_list.append(dribble3)
     shot_name_list.append("D3")
-    shot_type_list.append(stopbehind3)
     shot_name_list.append("SB3")
-    shot_type_list.append(nonpaint3)
     shot_name_list.append("NP3")
-    shot_type_list.append(painttouch3)
     shot_name_list.append("PT3")
+    # 3 is added to the loop for the three types of shots whose queries do not follow same format
     
-    data = []
-    for i in range(len(shot_type_list)):
-        shot = shot_name_list[i]
+    shot_players = []
+    shot_sums = []
+    for i in range(len(shot_name_list)+3):
+        if i<8:
+            shot = shot_name_list[i]
         shotlist = []
         shootersum = 0
         totalshooters = 0
         for player in players:
             getcontext().prec = 6
-            make = Decimal(db.session.query(Possession).filter(and_(Possession.shooter==player.id,Possession.result=="Make",Possession.shot==shot)).count())
-            miss = Decimal(db.session.query(Possession).filter(and_(Possession.shooter==player.id,Possession.result=="Miss",Possession.shot==shot)).count())
+            
+            if i<8:
+                make = Decimal(db.session.query(Possession).filter(and_(Possession.shooter==player.id,Possession.result=="Make",Possession.shot==shot)).count())
+                miss = Decimal(db.session.query(Possession).filter(and_(Possession.shooter==player.id,Possession.result=="Miss",Possession.shot==shot)).count())
+            if i == 8:
+                make = Decimal(db.session.query(Possession).filter(and_(Possession.shooter==player.id,Possession.result=="Make",Possession.open3==1)).count())
+                miss = Decimal(db.session.query(Possession).filter(and_(Possession.shooter==player.id,Possession.result=="Miss",Possession.open3==1)).count())
+            if i == 9:
+                make = Decimal(db.session.query(Possession).filter(and_(Possession.shooter==player.id,Possession.result=="Make",Possession.csjumper==1)).count())
+                miss = Decimal(db.session.query(Possession).filter(and_(Possession.shooter==player.id,Possession.result=="Miss",Possession.csjumper==1)).count())
+            if i == 10:
+                make = Decimal(db.session.query(Possession).filter(and_(Possession.shooter==player.id,Possession.result=="Make",Possession.assist==1)).count())
+                miss = Decimal(db.session.query(Possession).filter(and_(Possession.shooter==player.id,Possession.result=="Miss",Possession.assist==1)).count())
             if (make+miss)!=0:
                 
-                perc = make/(make+miss)*Decimal(100)
+                perc = make /(make+miss)*Decimal(100)
                 getcontext().prec = 4
                 perc_round = perc+Decimal(0)
                 shotlist.append(str(perc_round)+"%")
@@ -221,21 +180,83 @@ def shot_types():
         if totalshooters != 0:
             shootersum = Decimal(shootersum)/Decimal(totalshooters)
             shootersum = str(shootersum)+"%"
-        datainner = []
-        datainner.append(shotlist)
-        datainner.append(shootersum)
         
-        data.append(datainner)  
+        shot_players.append(shotlist)
+        shot_sums.append(shootersum)
+        
+    return render_template("shot_types.html", user=current_user, players=players, stats = shot_players, sums = shot_sums)
+
+@views.route('/shot_types_single', methods=['GET','POST'])
+@login_required
+def shot_types_single():
+    
+    playerid = session['player']
+    player = Player.query.get(playerid)
+    players = db.session.query(Player).all()
+    
+    shot_name_list = []
+    
+    shot_name_list.append("R2")
+    shot_name_list.append("PM2")
+    shot_name_list.append("PT2")
+    shot_name_list.append("NP2")
+    shot_name_list.append("D3")
+    shot_name_list.append("SB3")
+    shot_name_list.append("NP3")
+    shot_name_list.append("PT3")
+    # 3 is added to the loop for the three types of shots whose queries do not follow same format
+    
+    shot_players = []
+    shot_sums = []
+    for i in range(len(shot_name_list)+3):
+        if i<8:
+            shot = shot_name_list[i]
+        shotlist = []
+        shootersum = 0
+        totalshooters = 0
+        
+        for game in player.games:
+            getcontext().prec = 6
+            
+            if i<8:
+                make = Decimal(db.session.query(Possession).filter(and_(Possession.shooter==player.id,Possession.result=="Make",Possession.shot==shot,Possession.game_id==game.id)).count())
+                miss = Decimal(db.session.query(Possession).filter(and_(Possession.shooter==player.id,Possession.result=="Miss",Possession.shot==shot,Possession.game_id==game.id)).count())
+            if i == 8:
+                make = Decimal(db.session.query(Possession).filter(and_(Possession.shooter==player.id,Possession.result=="Make",Possession.open3==1,Possession.game_id==game.id)).count())
+                miss = Decimal(db.session.query(Possession).filter(and_(Possession.shooter==player.id,Possession.result=="Miss",Possession.open3==1,Possession.game_id==game.id)).count())
+            if i == 9:
+                make = Decimal(db.session.query(Possession).filter(and_(Possession.shooter==player.id,Possession.result=="Make",Possession.csjumper==1,Possession.game_id==game.id)).count())
+                miss = Decimal(db.session.query(Possession).filter(and_(Possession.shooter==player.id,Possession.result=="Miss",Possession.csjumper==1,Possession.game_id==game.id)).count())
+            if i == 10:
+                make = Decimal(db.session.query(Possession).filter(and_(Possession.shooter==player.id,Possession.result=="Make",Possession.assist==1,Possession.game_id==game.id)).count())
+                miss = Decimal(db.session.query(Possession).filter(and_(Possession.shooter==player.id,Possession.result=="Miss",Possession.assist==1,Possession.game_id==game.id)).count())
+            if (make+miss)!=0:
+                
+                perc = make /(make+miss)*Decimal(100)
+                getcontext().prec = 4
+                perc_round = perc+Decimal(0)
+                shotlist.append(str(perc_round)+"%")
+                shootersum += perc
+                totalshooters += 1
+            else:
+                shotlist.append("-")
+                
+
+        getcontext().prec = 4
+        if totalshooters != 0:
+            shootersum = Decimal(shootersum)/Decimal(totalshooters)
+            shootersum = str(shootersum)+"%"
+        
+        shot_players.append(shotlist)
+        
+        if shootersum == 0:
+            shootersum = '-'
+        shot_sums.append(shootersum)
         
         
-    
-    
-    
-    
-    return render_template("shot_types.html",
-                           user=current_user,
-                           players=players,
-                           data=data)
+        
+    return render_template("shot_types_single.html", user=current_user, player=player, games = player.games, stats = shot_players, sums = shot_sums)
+
 
 @views.route('/games', methods=['GET','POST'])
 @login_required
@@ -542,9 +563,8 @@ def basic_player_single():
     ftperc = []
     assist = []
     esq = []
-    games = player.games
   
-    for game in games:
+    for game in player.games:
        
         getcontext().prec = 3
         fgm_ = Decimal(db.session.query(Possession).filter(and_(game.id==Possession.game_id,Possession.shooter==player.id,Possession.result=="Make")).count())
@@ -606,7 +626,7 @@ def basic_player_single():
         
     
     
-    return render_template("basic_player_single.html",user=current_user, games = games , player=player, fgm = fgm , fga = fga, fgm3 = fgm3 , fga3 =fga3, efg=efg, ftm=ftm, fta=fta, ftperc = ftperc, assist = assist, esq = esq,
+    return render_template("basic_player_single.html",user=current_user, games = player.games , player=player, fgm = fgm , fga = fga, fgm3 = fgm3 , fga3 =fga3, efg=efg, ftm=ftm, fta=fta, ftperc = ftperc, assist = assist, esq = esq,
                            fgm_s = fgm_s , fga_s = fga_s, fgm3_s = fgm3_s , fga3_s =fga3_s, efg_s=efg_s, ftm_s=ftm_s, fta_s=fta_s, ftperc_s = ftperc_s, assist_s = assist_s, esq_s = esq_s
                            )
 
@@ -670,6 +690,19 @@ def enter_basic_player_single():
         
         return redirect(url_for('views.basic_player_single'))
 
+
+
+
+@views.route('/enter_shot_types_single', methods=["POST"])
+def enter_shot_types_single():
+    print("hello")
+    data = json.loads(request.data)
+    playerid = data['playerId']
+    print(playerid)
+    session['player'] = playerid
+    
+    return redirect(url_for('views.shot_types_single'))
+    
 
 
 

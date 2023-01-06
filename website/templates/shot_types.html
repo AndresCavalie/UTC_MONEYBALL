@@ -1,23 +1,25 @@
 {%extends "base.html"%} {% block title%}Home{%endblock%} {%block content%}
 </br>
-<h1 align="center">Player View</h1>
-<h3 align="center">UTC MENS BASKETBALL</h3>
+<h1 align="center">UTC MENS BASKETBALL</h1>
+<h3 align="center">Player Shot Types</h3>
+
 
 
     
 <table border = "2em">
   <tr>
-    <th>Player</th>
-    <th>FGM</th>
-    <th>FGA</th>
-    <th>3FGM</th>
-    <th>3FGA</th>
-    <th>eFG%</th>
-    <th>FTM</th>
-    <th>FTA</th>
-    <th>FT%</th>
-    <th>Assist +</th>
-    <th>ESQ Avg</th>
+    <th></th>
+    <th>Rim 2</th>
+    <th>Post Move 2</th>
+    <th>Paint 2</th>
+    <th>Non-Paint 2</th>
+    <th>Dribble 3</th>
+    <th>Stop-Behind 3</th>
+    <th>Non-Paint 3</th>
+    <th>Paint Touch 3</th>
+    <th>Open 3</th>
+    <th>C&#38;S Jumper</th>
+    <th>Assisted</th>
   </tr>
   
   {%for i in range(0,(players | length))%}
@@ -25,15 +27,141 @@
    
   <tr>
     
-
     <td><a href = ""onClick="enterPlayer({{players[i].id}})">{{players[i].name}}</a></td>
-    <td>{{data[0][0][i]}}</td>
+    {%for j in range(0,(stats | length))%}
+    <td>{{stats[j][i]}}</td>
+    {%endfor%}
+
    
   </tr>
   
   {%endfor%}
   <tr>
-    <td>{{s_rim2}}</td>
+    <td>Team Totals</td>
+    {%for i in range(0,(sums | length))%}
+    <td>{{sums[i]}}</td>
+    {%endfor%}
+    <!--<td>{{sums[1]}}</td>
+    <td>{{sums[2]}}</td>
+    <td>{{sums[3]}}</td>
+    <td>{{sums[4]}}</td>
+    <td>{{sums[5]}}</td>
+    <td>{{sums[6]}}</td>
+    <td>{{sums[7]}}</td>
+    <td>{{sums[8]}}</td>
+    <td>{{sums[9]}}</td>
+    <td>{{sums[10]}}</td>-->
   </tr>
 </table>
+</br>
+</br>
+</br>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<h3 align="center">Team Shot Types</h3>
+<table border = "2em">
+    <tr>
+      <th></th>
+      <th>Rim 2</th>
+      <th>Post Move 2</th>
+      <th>Paint 2</th>
+      <th>Non-Paint 2</th>
+      <th>Dribble 3</th>
+      <th>Stop-Behind 3</th>
+      <th>Non-Paint 3</th>
+      <th>Paint Touch 3</th>
+      <th>Open 3</th>
+      <th>C&#38;S Jumper</th>
+      <th>Assisted</th>
+    </tr>
+    
+    
+    <tr>
+      
+  
+      <td>FGM/A %</td>
+      {%for i in range(0,(stats | length))%}
+    <td>{{sums[i]}}</td>
+    {%endfor%}
+  
+     
+    </tr>
+    
+    
+    <tr>
+      <td>SQ Points</td>
+      <td>{{sums[0]}}</td>
+      <td>{{sums[1]}}</td>
+      <td>{{sums[2]}}</td>
+      <td>{{sums[3]}}</td>
+      <td>{{sums[4]}}</td>
+      <td>{{sums[5]}}</td>
+      <td>{{sums[6]}}</td>
+      <td>{{sums[7]}}</td>
+      <td>{{sums[8]}}</td>
+      <td>{{sums[9]}}</td>
+      <td>{{sums[10]}}</td>
+    </tr>
+
+    <tr>
+        <td>Total Points</td>
+        <td>{{sums[0]}}</td>
+        <td>{{sums[1]}}</td>
+        <td>{{sums[2]}}</td>
+        <td>{{sums[3]}}</td>
+        <td>{{sums[4]}}</td>
+        <td>{{sums[5]}}</td>
+        <td>{{sums[6]}}</td>
+        <td>{{sums[7]}}</td>
+        <td>{{sums[8]}}</td>
+        <td>{{sums[9]}}</td>
+        <td>{{sums[10]}}</td>
+      </tr>
+    
+      <tr>
+        <td> SQ Points per Shot</td>
+        <td>{{sums[0]}}</td>
+        <td>{{sums[1]}}</td>
+        <td>{{sums[2]}}</td>
+        <td>{{sums[3]}}</td>
+        <td>{{sums[4]}}</td>
+        <td>{{sums[5]}}</td>
+        <td>{{sums[6]}}</td>
+        <td>{{sums[7]}}</td>
+        <td>{{sums[8]}}</td>
+        <td>{{sums[9]}}</td>
+        <td>{{sums[10]}}</td>
+      </tr>
+
+      <tr>
+        <td> True Points per Shot</td>
+        <td>{{sums[0]}}</td>
+        <td>{{sums[1]}}</td>
+        <td>{{sums[2]}}</td>
+        <td>{{sums[3]}}</td>
+        <td>{{sums[4]}}</td>
+        <td>{{sums[5]}}</td>
+        <td>{{sums[6]}}</td>
+        <td>{{sums[7]}}</td>
+        <td>{{sums[8]}}</td>
+        <td>{{sums[9]}}</td>
+        <td>{{sums[10]}}</td>
+      </tr>
+    
+  </table>
 {%endblock%}
