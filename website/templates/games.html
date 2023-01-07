@@ -35,8 +35,8 @@
   <tr>
     
     <td><a href = "" onClick="enterPlayer({{games[i].id}})">{{games[i].name}}</a></td>
-    {%for j in range(0,(stats | length))%}
-    <td>{{stats[j][i]}}</td>
+    {%for j in range(0,(stats[i] | length))%}
+    <td>{{stats[i][j]}}</td>
     {%endfor%}
 
    
@@ -46,7 +46,7 @@
   <tr>
     <td>Total</td>
     {%for i in range(0,(sums | length))%}
-    <td>{{sums[i]}}</td>
+    <td>balls</td>
     {%endfor%}
   </tr>
 </table>

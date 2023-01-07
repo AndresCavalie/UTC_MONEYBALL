@@ -360,8 +360,9 @@ def games():
     
     games = db.session.query(Game).all()
     
-    
+    all_game_stats = []
     for i in range(len(games)):
+        
         game_stats = []
         
         poss = Decimal(db.session.query(Possession).filter(and_(Possession.poss==1,Possession.game_id==games[i].id)).count())
@@ -374,10 +375,106 @@ def games():
         
         
         
+        
+        
+        
         poss_zero = Decimal(db.session.query(Possession).filter(and_(Possession.poss==1,Possession.game_id==games[i].id)).count())
         
         if poss_zero+poss != 0:
             game_stats.append(poss_zero+poss)
+        else:
+            game_stats.append('-')
+            
+            
+            
+            
+            
+            
+            
+            
+        fgm_make = db.session.query(Possession).filter(and_(Possession.result == "Make",Possession.game_id==games[i].id)).count()
+        
+        fgm_miss = db.session.query(Possession).filter(and_(Possession.result == "Miss",Possession.game_id==games[i].id)).count()
+        
+        if fgm_make !=0 and fgm_miss != 0:
+            game_stats.append(str(fgm_make) + '/' + str(fgm_miss))
+        else:
+            game_stats.append('-')
+            
+                    
+                 
+                 
+                 
+                    
+        
+        
+        
+        fgm3_make = db.session.query(Possession).filter(and_(Possession.result == "Make",Possession.game_id==games[i].id,(or_(Possession.shot=='NP3',Possession.shot=='PT3',Possession.shot=='SB3',Possession.shot=='3')))).count()
+        
+        fgm3_miss = db.session.query(Possession).filter(and_(Possession.result == "Miss",Possession.game_id==games[i].id,(or_(Possession.shot=='NP3',Possession.shot=='PT3',Possession.shot=='SB3',Possession.shot=='3')))).count()    
+        
+        if fgm3_make !=0 and fgm3_miss != 0:
+            game_stats.append(str(fgm3_make) + '/' + str(fgm3_miss))
+        else:
+            game_stats.append('-')
+        
+        
+        
+        
+        
+        
+        
+        
+        ftm_sum = 0
+        ftm = db.session.query(Possession.ftm).filter(and_(Possession.ftm != None,Possession.game_id==games[i].id)).all()
+        fta_sum = 0
+        fta = db.session.query(Possession.fta).filter(and_(Possession.fta != None,Possession.game_id==games[i].id)).all()
+        
+        for j in range(len(fta)):
+            ftm_sum += ftm[j][0]
+            fta_sum += fta[j][0]
+            
+        if ftm_sum !=0 and fta_sum != 0:
+            game_stats.append(str(ftm_sum) + '/' + str(fta_sum))
+        else:
+            game_stats.append('-')
+            
+            
+        
+        
+        
+        
+        
+        assist = db.session.query(Possession).filter(and_(Possession.assist==1,Possession.game_id==games[i].id)).count()
+        
+        if assist != 0:
+            game_stats.append(assist)
+        else:
+            game_stats.append('-')
+        
+        
+        
+        
+        
+        
+        
+        
+        open3 = db.session.query(Possession).filter(and_(Possession.open3==1,Possession.game_id==games[i].id)).count()
+        
+        if open3 != 0:
+            game_stats.append(open3)
+        else:
+            game_stats.append('-')
+        
+        
+        
+        
+        
+        
+        csjumper = db.session.query(Possession).filter(and_(Possession.csjumper==1,Possession.game_id==games[i].id)).count()
+        
+        if csjumper != 0:
+            game_stats.append(csjumper)
         else:
             game_stats.append('-')
             
@@ -389,7 +486,49 @@ def games():
         
         
         
-    return render_template("games.html", user=current_user, players=players, stats = shot_players, sums = shot_sums, sq = sq_points , tp = total_points, sqper = sq_per,tpper = tp_per)
+        
+        #note WHAT ARE THE NONE VALUES IN SHOTCLOCK ABOUT
+        
+        poss1_sum = Decimal(0)
+        shot_poss1 = db.session.query(Possession.shotclock).filter(and_(Possession.poss==1,Possession.game_id==games[i].id)).all()
+        poss0_sum = Decimal(0)
+        shot_poss0 = db.session.query(Possession.shotclock).filter(and_(Possession.poss==0,Possession.game_id==games[i].id)).all()
+        
+        
+        for j in range(len(shot_poss1)):
+            if shot_poss1[j][0] != None:
+                poss1_sum += Decimal(30) - Decimal(shot_poss1[j][0])
+            
+        for j in range(len(shot_poss0)):
+            if shot_poss0[j][0] != None:
+                poss0_sum += Decimal(20) - Decimal(shot_poss0[j][0])
+            
+        getcontext().prec = 6
+        posslength = (poss1_sum + poss0_sum) / (Decimal(len(shot_poss1)) + Decimal(len(shot_poss0)))
+        
+        getcontext().prec = 4
+        posslength = posslength + Decimal(0)
+        
+        if posslength != 0:
+            game_stats.append(posslength)
+        else:
+            game_stats.append('-')
+            
+            
+            
+            
+            
+            
+            
+            
+        all_game_stats.append(game_stats)
+        
+        
+        
+        
+        
+        #print(all_game_stats)
+    return render_template("games.html", user=current_user, stats = all_game_stats, games=games)
 
 
 @views.route('/triggers', methods=['GET','POST'])
