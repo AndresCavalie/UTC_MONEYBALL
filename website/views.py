@@ -299,8 +299,20 @@ def shot_types_single():
     #stat_list = ['0: poss','1: chances','2: fgm-fga','3: 3fgm','4: ftm-fta','5: assist','6: open 3','7: c&sjumper','8: poss length', '9: tag %','10: trigger time', '11: bolt time' , '12: paint time', '13: Poss with paint time', '14: Post ups', '15: total passes', '16: passes/poss','17: avg touches']
     
     
+    playerid = session['player']
     
+    player = Player.query.get(playerid)
     
+    shot_name_list = []
+    
+    shot_name_list.append("R2")
+    shot_name_list.append("PM2")
+    shot_name_list.append("PT2")
+    shot_name_list.append("NP2")
+    shot_name_list.append("D3")
+    shot_name_list.append("SB3")
+    shot_name_list.append("NP3")
+    shot_name_list.append("PT3")
     
     shot_players = []
     shot_sums = []
