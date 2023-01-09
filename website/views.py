@@ -504,6 +504,7 @@ def games():
                 poss0_sum += Decimal(20) - Decimal(shot_poss0[j][0])
             
         getcontext().prec = 6
+        #the DIVISOR MAY CONTAIN NONES note
         posslength = (poss1_sum + poss0_sum) / (Decimal(len(shot_poss1)) + Decimal(len(shot_poss0)))
         
         getcontext().prec = 4
@@ -514,12 +515,204 @@ def games():
         else:
             game_stats.append('-')
             
+        
+        
+        #ASK LOGAN ABOUT THIS note
+        tagperc = 0
+        
+        if tagperc != 0:
+            game_stats.append(tagperc)
+        else:
+            game_stats.append('-')
+        
+            
+        
+        #AVERAGE OF (30 - First Trigger (Column AH) for possession = 1);  Do not count Possession = 0 rows
+        
+        poss1_sum = Decimal(0)
+        triggers = db.session.query(Possession.firsttrigger).filter(and_(Possession.poss==1,Possession.game_id==games[i].id)).all()
+        
+        
+        
+        for j in range(len(triggers)):
+            if triggers[j][0] != None:
+                poss1_sum += Decimal(30) - Decimal(triggers[j][0])
+            
+        
+            
+        getcontext().prec = 6
+        triggertime = (poss1_sum) / Decimal(len(triggers))
+        
+        getcontext().prec = 4
+        triggertime = triggertime + Decimal(0)
+        
+        if triggertime != 0:
+            game_stats.append(triggertime)
+        else:
+            game_stats.append('-')
+            
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        #same but with bolt
+        
+        poss1_sum = Decimal(0)
+        bolt = db.session.query(Possession.bolt).filter(and_(Possession.poss==1,Possession.game_id==games[i].id,)).all()
+        
+        
+        
+        for j in range(len(bolt)):
+            if bolt[j][0] != None:
+                poss1_sum += Decimal(30) - Decimal(bolt[j][0])
+            
+        
+            
+        getcontext().prec = 6
+        bolttime = (poss1_sum) / Decimal(len(bolt))
+        
+        getcontext().prec = 4
+        bolttime = bolttime + Decimal(0)
+        
+        if bolttime != 0:
+            game_stats.append(bolttime)
+        else:
+            game_stats.append('-')
             
             
             
             
             
             
+            
+        
+        
+        #same but for painttouchtime
+        
+        poss1_sum = Decimal(0)
+        painttouch = db.session.query(Possession.painttouchtime).filter(and_(Possession.poss==1,Possession.painttouchtime != None, Possession.game_id==games[i].id)).all()
+        
+        
+        
+        for j in range(len(painttouch)):
+            if painttouch[j][0] != None:
+                poss1_sum += Decimal(30) - Decimal(painttouch[j][0])
+            
+        
+            
+        getcontext().prec = 6
+        painttouchtime = (poss1_sum) / Decimal(len(painttouch))
+        
+        getcontext().prec = 4
+        painttouchtime = painttouchtime + Decimal(0)
+        
+        if painttouchtime != 0:
+            game_stats.append(painttouchtime)
+        else:
+            game_stats.append('-')
+            
+            
+        
+        
+        
+        
+        
+        
+        poss_with_paint = db.session.query(Possession.painttouchtime).filter(and_(Possession.painttouchtime != None, Possession.game_id==games[i].id)).count()
+        
+        
+        
+        if poss_with_paint != 0:
+            game_stats.append(poss_with_paint)
+        else:
+            game_stats.append('-')
+            
+            
+                
+            
+            
+        posttouches = Decimal(0)
+        posttouch = db.session.query(Possession.posttouches).filter(and_(Possession.posttouches != None, Possession.game_id==games[i].id)).all()
+        
+        
+        
+        for j in range(len(posttouch)):
+            if posttouch[j][0] != None:
+                posttouches += Decimal(posttouch[j][0])
+            
+        
+            
+        
+        if posttouches != 0:
+            game_stats.append(posttouches)
+        else:
+            game_stats.append('-')
+            
+           
+           
+        
+        
+        
+        
+        
+        
+        
+        passes_sum = Decimal(0)
+        passes = db.session.query(Possession.numpasses).filter(and_(Possession.posttouches != None, Possession.game_id==games[i].id)).all()
+        
+        
+        
+        for j in range(len(passes)):
+            if passes[j][0] != None:
+                passes_sum += Decimal(passes[j][0])
+            
+        
+            
+        
+        if passes_sum != 0:
+            game_stats.append(passes_sum)
+        else:
+            game_stats.append('-')
+            
+        
+        
+        
+        
+        getcontext().prec = 6
+        
+        pass_poss = passes_sum/poss
+        
+        getcontext().prec = 2
+        
+        pass_poss = pass_poss + Decimal(0)
+        
+        if pass_poss != 0:
+            game_stats.append(str(pass_poss)+'%')
+        else:
+            game_stats.append('-')
+        
+         
+            
+        #ASK LOGAN ABOUT THIS note
+        #can we add a total touches column to the excel because we would need to hardcode player names into data base.
+        #if you do want me to store specifically who touches, we may need to agree on a permanent format for where player touches will be in 
+        #the spreadsheet // perhaps per position or player number.
+        #perhaps add another
+        avgtouches = 0
+        
+        if avgtouches != 0:
+            game_stats.append(tagperc)
+        else:
+            game_stats.append('-')    
+            
+            
+            
+        
             
         all_game_stats.append(game_stats)
         
