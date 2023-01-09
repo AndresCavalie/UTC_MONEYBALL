@@ -739,7 +739,128 @@ def games():
 @views.route('/triggers', methods=['GET','POST'])
 @login_required
 def triggers():
-    return render_template("home.html",user=current_user)
+    
+    
+    shottriggers = ['1','1 Above','122','2','3','BLOB Special','BLOB1','BLOB2','BLOB3','Chin','DHO','Hands','Just Playing','Loop','Low','Point','Porch','Putback','Thumbs Up','Transition']
+    data = []
+    
+    for trigger in shottriggers:
+        trigger_data = []
+        trigger_data.append(trigger)
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        getcontext().prec = 6
+        sq_sum = Decimal(0)
+        sqpoints = db.session.query(Possession.esq).filter(and_(Possession.shottrigger==trigger, Possession.esq != None)).all()
+        
+        
+        for j in range(len(sqpoints)):
+            sq_sum += sqpoints[j][0]
+        
+        sq_sum_6prec = sq_sum
+        getcontext().prec = 4
+        sq_sum = sq_sum + Decimal(0)
+        
+        if sq_sum != 0:
+            trigger_data.append(sq_sum)
+        else:
+            trigger_data.append('-')
+            
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        getcontext().prec = 4
+        pt_sum = Decimal(0)
+        points = db.session.query(Possession.points).filter(and_(Possession.shottrigger==trigger, Possession.points != None)).all()
+        
+        
+        for j in range(len(points)):
+            pt_sum += points[j][0]
+        
+        
+        if pt_sum != 0:
+            trigger_data.append(pt_sum)
+        else:
+            trigger_data.append('-')
+            
+        
+        
+        
+        getcontext().prec = 6
+        
+        instances = Decimal(db.session.query(Possession).filter(Possession.shottrigger == trigger).count())
+        
+        
+        
+        
+        if instances != 0 :
+            sq_ratio = sq_sum_6prec / instances
+        
+        
+        getcontext().prec = 4
+        sq_ratio = sq_ratio + Decimal(0)
+        
+        if sq_ratio != 0:
+            trigger_data.append(sq_ratio)
+        else:
+            trigger_data.append('-')
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        getcontext().prec = 6
+        
+        if instances != 0 :
+            pt_ratio = pt_sum / instances
+        
+        getcontext().prec = 4
+        pt_ratio = pt_ratio + Decimal(0)
+        
+        if pt_ratio != 0:
+            trigger_data.append(pt_ratio)
+        else:
+            trigger_data.append('-')
+            
+        
+        
+        
+
+        if instances != 0:
+            trigger_data.append(instances)
+        else:
+            trigger_data.append('-')
+        
+        
+        data.append(trigger_data)
+        
+        
+        
+        
+        
+        
+    
+    
+    return render_template("triggers.html",user=current_user,data=data)
     
 @views.route('/', methods=['GET','POST'])
 @login_required
