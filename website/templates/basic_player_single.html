@@ -5,7 +5,8 @@
 
 
     
-<table border = "2em">
+<table class='table table-striped'>
+  <thead class = 'thead-dark'>
   <tr>
     <th>Team</th>
     <th>FGM</th>
@@ -19,7 +20,7 @@
     <th>Assist +</th>
     <th>ESQ Avg</th>
   </tr>
-  
+</thead>
   {%for i in range(0,(games | length))%}
   <tr>
     <td>{{games[i].team}} {{games[i].date}}</td>
@@ -86,4 +87,8 @@
     
   </tr>
 </table>
+{%endblock%}
+{%block scripts%}
+
+<script type="text/javascript" src="../static/tablesort.js"></script>
 {%endblock%}

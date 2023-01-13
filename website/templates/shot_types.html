@@ -6,7 +6,8 @@
 
 
     
-<table border = "2em">
+<table class='table table-striped'>
+  <thead class = 'thead-dark'>
   <tr>
     <th></th>
     <th>Rim 2</th>
@@ -21,6 +22,7 @@
     <th>C&#38;S Jumper</th>
     <th>Assisted</th>
   </tr>
+  <thead>
   
   {%for i in range(0,(players | length))%}
 
@@ -74,7 +76,8 @@
 
 
 <h3 align="center">Team Shot Types</h3>
-<table border = "2em">
+<table class='table table-striped'>
+  <thead class = 'thead-dark'>
     <tr>
       <th></th>
       <th>Rim 2</th>
@@ -89,7 +92,7 @@
       <th>C&#38;S Jumper</th>
       <th>Assisted</th>
     </tr>
-    
+  </thead>
     
     <tr>
       
@@ -136,4 +139,8 @@
 </br>
 </br>
 </br>
+{%endblock%}
+{%block scripts%}
+
+<script type="text/javascript" src="../static/tablesort.js"></script>
 {%endblock%}

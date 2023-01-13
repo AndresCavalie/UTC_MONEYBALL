@@ -740,13 +740,13 @@ def games():
 @login_required
 def triggers():
     
-    
+    shottriggersforHTML = ['1-','1 Above','122-','2-','3-','BLOB Special','BLOB1','BLOB2','BLOB3','Chin','DHO','Hands','Just Playing','Loop','Low','Point','Porch','Putback','Thumbs Up','Transition']
     shottriggers = ['1','1 Above','122','2','3','BLOB Special','BLOB1','BLOB2','BLOB3','Chin','DHO','Hands','Just Playing','Loop','Low','Point','Porch','Putback','Thumbs Up','Transition']
     data = []
     
-    for trigger in shottriggers:
+    for i,trigger in enumerate(shottriggers):
         trigger_data = []
-        trigger_data.append(trigger)
+        trigger_data.append(shottriggersforHTML[i])
         
         
         

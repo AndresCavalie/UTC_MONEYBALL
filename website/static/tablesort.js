@@ -2,6 +2,18 @@ function containsNumbers(str) {
     return /[0-9]/.test(str);
   }
 
+
+function containsPercent(str){
+    let pattern = /%/;
+    return pattern.test(str);
+}
+
+function containsLetters(str){
+    let pattern = /[a-z]/g;
+    return pattern.test(str);
+}
+
+
 /**
  * Sorts an HTML table
  * 
@@ -16,17 +28,26 @@ function sortTableByColumn(table, column, asc = true){
 
     //sort each row
     const sortedRows = rows.sort((a,b) => {
-        const aColText = a.querySelector(`td:nth-child(${column + 1})`).textContent.trim();
-        const bColText = b.querySelector(`td:nth-child(${column + 1})`).textContent.trim();
+        let aColText = a.querySelector(`td:nth-child(${column + 1})`).textContent.trim();
+        let bColText = b.querySelector(`td:nth-child(${column + 1})`).textContent.trim();
 
-        if (containsNumbers(aColText) && containsNumbers(bColText)){
+        aColText = aColText.toLowerCase();
+        bColText = bColText.toLowerCase();
 
-            console.log("HAS NUMBERS")
+        if (containsNumbers(aColText) && containsNumbers(bColText) && !(containsLetters(aColText)) && !(containsLetters(bColText))){
+
+            console.log("HAS NUMBERS");
+            if (containsPercent(aColText)){
+                console.log("HAS PERCENT");
+                aColText = aColText.replace('%','');
+                bColText = bColText.replace('%','');
+            }
+
             
             return Number(aColText) > Number(bColText) ? (1*dirModifier) : (-1 * dirModifier);
         }
         else {
-            console.log("NO NUMBERS")
+            console.log("NO NUMBERS");
             return aColText > bColText ? (1*dirModifier) : (-1 * dirModifier);
         }
         

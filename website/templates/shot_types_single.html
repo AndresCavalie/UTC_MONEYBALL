@@ -5,7 +5,8 @@
 
 
     
-<table border = "2em">
+<table class='table table-striped'>
+  <thead class = 'thead-dark'>
   <tr>
     <th>Player</th>
     <th>Rim 2</th>
@@ -20,6 +21,7 @@
     <th>C&#38;S Jumper</th>
     <th>Assisted</th>
   </tr>
+</thead>
   
   {%for i in range(0,(games | length))%}
 
@@ -59,4 +61,8 @@
     <td>{{sums[10]}}</td>
   </tr>
 </table>
+{%endblock%}
+{%block scripts%}
+
+<script type="text/javascript" src="../static/tablesort.js"></script>
 {%endblock%}
