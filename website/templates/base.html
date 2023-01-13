@@ -14,7 +14,7 @@
       href="https://stackpath.bootstrapcdn.com/font-awesome/4.7.0/css/font-awesome.min.css"
       crossorigin="anonymous"
     />
-
+    {%block style%}{%endblock%}
     <title>{% block title%}HOME{%endblock%}</title>
     <style>
       .postlink:hover {
@@ -85,5 +85,7 @@
     ></script>
 
     <script type="text/javascript" src="../static/index.js"></script>
+    {%block scripts%}
+    {%endblock%}
   </body>
 </html>

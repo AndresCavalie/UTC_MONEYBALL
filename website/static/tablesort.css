@@ -1,0 +1,30 @@
+.table-striped th{
+
+    cursor: pointer;
+    
+}
+
+.table-striped th::after{
+
+    content: '\00A0\⥯'
+    
+    
+}
+
+.table-striped .th-sort-asc::after{
+    content: '\00A0\00A0\↾';
+}
+
+.table-striped .th-sort-desc::after{
+    content: '\00A0\00A0\⇂';
+}
+
+.table-striped .th-sort-asc::after,
+.table-striped .th-sort-desc::after {
+    
+}
+
+.table-striped .th-sort-asc,
+.table-striped .th-sort-desc {
+    background: rgba(168, 27, 27, 0.1);
+}
