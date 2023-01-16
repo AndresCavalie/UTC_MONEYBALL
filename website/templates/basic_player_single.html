@@ -1,4 +1,11 @@
-{%extends "base.html"%} {% block title%}Home{%endblock%} {%block content%}
+{%extends "base.html"%}{%block style%}
+
+<link
+      rel="stylesheet"
+      href="../static/tablesort.css"
+    />
+    <link href="//maxcdn.bootstrapcdn.com/font-awesome/4.1.0/css/font-awesome.min.css" rel="stylesheet">
+{%endblock%} {% block title%}Home{%endblock%} {%block content%}
 </br>
 <h1 align="center">{{player.name}} View</h1>
 <h3 align="center">UTC MENS BASKETBALL</h3>
@@ -21,6 +28,7 @@
     <th>ESQ Avg</th>
   </tr>
 </thead>
+<tbody>
   {%for i in range(0,(games | length))%}
   <tr>
     <td>{{games[i].team}} {{games[i].date}}</td>
@@ -49,6 +57,7 @@
   
   </tr>
   {%endfor%}
+</tbody>
   <tr>
 
 

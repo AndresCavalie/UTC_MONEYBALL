@@ -1,4 +1,11 @@
-{%extends "base.html"%} {% block title%}Home{%endblock%} {%block content%}
+{%extends "base.html"%} {%block style%}
+
+<link
+      rel="stylesheet"
+      href="../static/tablesort.css"
+    />
+    <link href="//maxcdn.bootstrapcdn.com/font-awesome/4.1.0/css/font-awesome.min.css" rel="stylesheet">
+{%endblock%}{% block title%}Home{%endblock%} {%block content%}
 </br>
 <h1 align="center">UTC MENS BASKETBALL</h1>
 <h3 align="center">Player Shot Types</h3>
@@ -9,7 +16,7 @@
 <table class='table table-striped'>
   <thead class = 'thead-dark'>
   <tr>
-    <th></th>
+    <th>Player</th>
     <th>Rim 2</th>
     <th>Post Move 2</th>
     <th>Paint 2</th>
@@ -23,7 +30,7 @@
     <th>Assisted</th>
   </tr>
   <thead>
-  
+  <tbody>
   {%for i in range(0,(players | length))%}
 
    
@@ -38,6 +45,7 @@
   </tr>
   
   {%endfor%}
+</tbody>
   <tr>
     <td>Team Totals</td>
     {%for i in range(0,(sums | length))%}
@@ -54,6 +62,7 @@
     <td>{{sums[9]}}</td>
     <td>{{sums[10]}}</td>-->
   </tr>
+
 </table>
 </br>
 </br>
@@ -143,4 +152,5 @@
 {%block scripts%}
 
 <script type="text/javascript" src="../static/tablesort.js"></script>
+<script>sortTableByColumn(document.querySelector('table'),0)</script>
 {%endblock%}

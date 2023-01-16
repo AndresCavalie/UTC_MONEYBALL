@@ -373,9 +373,15 @@ def games():
     games = db.session.query(Game).all()
     
     all_game_stats = []
+    
+    game_sums = [0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0]
+    
     for i in range(len(games)):
         
         game_stats = []
+        
+        game_stats.append(games[i].team+" "+ games[i].date)
+        
         
         poss = Decimal(db.session.query(Possession).filter(and_(Possession.poss==1,Possession.game_id==games[i].id)).count())
         
@@ -384,6 +390,7 @@ def games():
         else:
             game_stats.append('-')
         
+        game_sums[i] += poss
         
         
         
@@ -392,6 +399,7 @@ def games():
         
         poss_zero = Decimal(db.session.query(Possession).filter(and_(Possession.poss==1,Possession.game_id==games[i].id)).count())
         
+        getcontext().prec = 6
         if poss_zero+poss != 0:
             game_stats.append(poss_zero+poss)
         else:
@@ -733,6 +741,11 @@ def games():
         
         
         #print(all_game_stats)
+        
+        print(all_game_stats)
+        
+        
+                
     return render_template("games.html", user=current_user, stats = all_game_stats, games=games)
 
 

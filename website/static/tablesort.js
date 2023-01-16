@@ -80,5 +80,3 @@ document.querySelectorAll(".table-striped th").forEach(headerCell => {
     });
 
 });
-
-sortTableByColumn(document.querySelector('table'),0)

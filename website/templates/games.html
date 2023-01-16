@@ -6,9 +6,10 @@
 
 
     
-<table border = "2em">
+<table class='table table-striped'>
+  <thead class='thead-dark'>
   <tr>
-    <th></th>
+    <th>Games</th>
     <th>Poss</th>
     <th>Chances</th>
     <th>FGM-FGA</th>
@@ -28,13 +29,13 @@
     <th>Passes / Poss</th>
     <th>Avg Touches</th>
   </tr>
-  
+</thead>
   {%for i in range(0,(games | length))%}
 
    
   <tr>
     
-    <td><a href = "" onClick="enterPlayer({{games[i].id}})">{{games[i].name}}</a></td>
+    
     {%for j in range(0,(stats[i] | length))%}
     <td>{{stats[i][j]}}</td>
     {%endfor%}
