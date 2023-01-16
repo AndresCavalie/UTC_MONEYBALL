@@ -374,7 +374,7 @@ def games():
     
     all_game_stats = []
     
-    game_sums = [0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0]
+    game_sums = [0,0,[0,0],[0,0],[0,0],0,0,0,[Decimal(0),Decimal(0)],[Decimal(0),Decimal(0)],[Decimal(0),Decimal(0)],[Decimal(0),Decimal(0)],[Decimal(0),Decimal(0)],0,0,0,[Decimal(0),Decimal(0)],[Decimal(0),Decimal(0)]]
     
     for i in range(len(games)):
         
@@ -389,8 +389,8 @@ def games():
             game_stats.append(poss)
         else:
             game_stats.append('-')
-        
-        game_sums[i] += poss
+        getcontext().prec = 6
+        game_sums[0] += poss + Decimal(0)
         
         
         
@@ -405,7 +405,7 @@ def games():
         else:
             game_stats.append('-')
             
-            
+        game_sums[1] += (poss_zero+poss)    
             
             
             
@@ -422,7 +422,8 @@ def games():
             game_stats.append('-')
             
                     
-                 
+        game_sums[2][0] += fgm_make
+        game_sums[2][1] += fgm_miss
                  
                  
                     
@@ -439,7 +440,8 @@ def games():
             game_stats.append('-')
         
         
-        
+        game_sums[3][0] += fgm3_make
+        game_sums[3][1] += fgm3_miss
         
         
         
@@ -459,7 +461,9 @@ def games():
         else:
             game_stats.append('-')
             
-            
+        game_sums[4][0] += ftm_sum
+        game_sums[4][1] += fta_sum
+           
         
         
         
@@ -473,7 +477,7 @@ def games():
             game_stats.append('-')
         
         
-        
+        game_sums[5] += assist
         
         
         
@@ -486,7 +490,7 @@ def games():
         else:
             game_stats.append('-')
         
-        
+        game_sums[6] += open3
         
         
         
@@ -498,7 +502,7 @@ def games():
         else:
             game_stats.append('-')
             
-        
+        game_sums[7] += csjumper
         
         
         
@@ -526,7 +530,8 @@ def games():
         getcontext().prec = 6
         #the DIVISOR MAY CONTAIN NONES note
         posslength = (poss1_sum + poss0_sum) / (Decimal(len(shot_poss1)) + Decimal(len(shot_poss0)))
-        
+        game_sums[8][0] += 1
+        game_sums[8][1] += posslength
         getcontext().prec = 4
         posslength = posslength + Decimal(0)
         
@@ -539,7 +544,8 @@ def games():
         
         #ASK LOGAN ABOUT THIS note
         tagperc = 0
-        
+        game_sums[9][0] += 1
+        game_sums[9][1] += tagperc
         if tagperc != 0:
             game_stats.append(tagperc)
         else:
@@ -562,7 +568,8 @@ def games():
             
         getcontext().prec = 6
         triggertime = (poss1_sum) / Decimal(len(triggers))
-        
+        game_sums[10][0] += 1
+        game_sums[10][1] += triggertime
         getcontext().prec = 4
         triggertime = triggertime + Decimal(0)
         
@@ -595,7 +602,8 @@ def games():
             
         getcontext().prec = 6
         bolttime = (poss1_sum) / Decimal(len(bolt))
-        
+        game_sums[11][1] += bolttime
+        game_sums[11][0] += 1
         getcontext().prec = 4
         bolttime = bolttime + Decimal(0)
         
@@ -627,7 +635,8 @@ def games():
             
         getcontext().prec = 6
         painttouchtime = (poss1_sum) / Decimal(len(painttouch))
-        
+        game_sums[12][1] += painttouchtime
+        game_sums[12][0] += 1
         getcontext().prec = 4
         painttouchtime = painttouchtime + Decimal(0)
         
@@ -646,7 +655,7 @@ def games():
         poss_with_paint = db.session.query(Possession.painttouchtime).filter(and_(Possession.painttouchtime != None, Possession.game_id==games[i].id)).count()
         
         
-        
+        game_sums[13] += poss_with_paint
         if poss_with_paint != 0:
             game_stats.append(poss_with_paint)
         else:
@@ -666,7 +675,7 @@ def games():
                 posttouches += Decimal(posttouch[j][0])
             
         
-            
+        game_sums[14] += posttouches   
         
         if posttouches != 0:
             game_stats.append(posttouches)
@@ -693,7 +702,7 @@ def games():
             
         
             
-        
+        game_sums[15] += passes_sum 
         if passes_sum != 0:
             game_stats.append(passes_sum)
         else:
@@ -706,7 +715,8 @@ def games():
         getcontext().prec = 6
         
         pass_poss = passes_sum/poss
-        
+        game_sums[16][0] += 1
+        game_sums[16][1] += pass_poss 
         getcontext().prec = 2
         
         pass_poss = pass_poss + Decimal(0)
@@ -724,7 +734,8 @@ def games():
         #the spreadsheet // perhaps per position or player number.
         #perhaps add another
         avgtouches = 0
-        
+        game_sums[17][0] += 1
+        game_sums[17][1] += avgtouches 
         if avgtouches != 0:
             game_stats.append(tagperc)
         else:
@@ -744,9 +755,16 @@ def games():
         
         print(all_game_stats)
         
+    for i in range(len(game_sums)):
+        if i >= 2 and i <=4:
+            game_sums[i] = (str)(game_sums[i][0]) +'/'+ (str)(game_sums[i][1])
         
-                
-    return render_template("games.html", user=current_user, stats = all_game_stats, games=games)
+        if i>=8 and i<=12:
+            game_sums[i] = game_sums[i][1]/game_sums[i][0]
+        
+        if i >= 16:
+            game_sums[i] = game_sums[i][1]/game_sums[i][0]
+    return render_template("games.html", user=current_user, stats = all_game_stats, games=games, sums = game_sums)
 
 
 @views.route('/triggers', methods=['GET','POST'])
