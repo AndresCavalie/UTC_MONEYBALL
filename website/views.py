@@ -754,7 +754,7 @@ def games():
         #print(all_game_stats)
         
         print(all_game_stats)
-        
+    getcontext().prec = 4    
     for i in range(len(game_sums)):
         if i >= 2 and i <=4:
             game_sums[i] = (str)(game_sums[i][0]) +'/'+ (str)(game_sums[i][1])
@@ -763,7 +763,8 @@ def games():
             game_sums[i] = game_sums[i][1]/game_sums[i][0]
         
         if i >= 16:
-            game_sums[i] = game_sums[i][1]/game_sums[i][0]
+            getcontext().prec = 2
+            game_sums[i] = str(game_sums[i][1]/game_sums[i][0]) + '%'
     return render_template("games.html", user=current_user, stats = all_game_stats, games=games, sums = game_sums)
 
 
@@ -1069,7 +1070,7 @@ def home():
             db.session.commit()
             db.session.add(playerlist[i])    
             db.session.commit()
-        return render_template("home.html",user=current_user)
+        return render_template("add_game.html",user=current_user)
     # if request.method == 'POST':
     #     searchName = request.form.get('searchNameName')
     #     sub = request.form.get('subNameName')
@@ -1134,7 +1135,7 @@ def home():
     #     return redirect(url_for('views.searches', search=search))
         
     
-    return render_template("home.html",user=current_user)
+    return render_template("add_game.html",user=current_user)
 
 @views.route('/delete-search', methods=["POST"])
 def delete_search():
