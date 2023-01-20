@@ -1,0 +1,47 @@
+{%extends "base.html"%}
+
+ {% block title%}Home{%endblock%} {%block content%}
+</br>
+<h3 align="center">UTC MENS BASKETBALL</h3>
+
+<h1 align="center">Roster</h1>
+</br>
+
+<table class='table'>
+    <tr>
+<th>Number</th>
+<th>Initials</th>
+<th>Name</th>
+
+<th></th>
+    </tr>
+    
+    <tr>
+        <form method = "POST">
+        <td><input type="jersey" class="form-control" id="number"  name='number' placeholder="##"></td>
+        
+        <td><input type="initials" class="form-control" id="initials" name='initials'  placeholder="XX"></td>
+        <td><input type="name" class="form-control" id="name"  name='name' placeholder="John Doe"></td>
+   <td><button  class="btn btn-primary" type="submit" ><h3>Add Player</h3></button></td>
+        </form>
+
+    </tr>
+
+{%for player in players%}
+<tr>
+    
+    <td>{{player.number}}</td>
+    
+    <td>{{player.initials}}</td>
+    <td>{{player.name}}</td>
+    <td><button  class="btn btn-success" onClick= "backHome()" style="margin-right:7px;"><h4>Edit</h4></button><button
+        type="button"
+        class="btn btn-danger"
+        onClick="deletePost({{player.id}})"
+      >
+        <h4>Delete</h4>
+      </button></td>
+</tr>
+{%endfor%}
+</table>
+{%endblock%}

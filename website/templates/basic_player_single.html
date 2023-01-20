@@ -7,12 +7,16 @@
     <link href="//maxcdn.bootstrapcdn.com/font-awesome/4.1.0/css/font-awesome.min.css" rel="stylesheet">
 {%endblock%} {% block title%}Home{%endblock%} {%block content%}
 </br>
-<h1 align="center">{{player.name}} View</h1>
 <h3 align="center">UTC MENS BASKETBALL</h3>
+
+<h1 align="center">Basic Player - {{player.name}}</h1>
+</br>
+
 
 <a href = "/basic_player" ><button  class="btn btn-primary" ><h4>Back</h4></button></a>
 </br>
 </br>
+<div class="table-responsive">
 <table class='table table-striped'>
   <thead class = 'thead-dark'>
   <tr>
@@ -97,6 +101,7 @@
     
   </tr>
 </table>
+</div>
 {%endblock%}
 {%block scripts%}
 

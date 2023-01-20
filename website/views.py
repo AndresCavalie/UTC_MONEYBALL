@@ -124,6 +124,25 @@ def basic_player():
     
     return render_template("basic_player.html",user=current_user,players=players, fgm = fgm , fga = fga, fgm3 = fgm3 , fga3 =fga3, efg=efg, ftm=ftm, fta=fta, ftperc = ftperc, assist = assist, esq = esq , sum=sum)
 
+@views.route('/roster', methods=['GET','POST'])
+@login_required
+def roster():
+    # players = db.session.query(Player).join(Search).filter(Search.user_id == User.id).all()
+    players = db.session.query(Player).all()
+    
+    if request.method == 'POST':
+        number = request.form.get('number')
+        initials = request.form.get('initials')
+        name = request.form.get('name')
+        print(number)
+        print(initials)
+        print(name)
+        player = Player(number = number,initials = initials,name = name)
+        db.session.add(player)
+        db.session.commit()
+        return redirect(url_for('views.roster'))
+    return render_template("roster.html",user=current_user,players=players)
+
 @views.route('/shot_types', methods=['GET','POST'])
 @login_required
 def shot_types():
@@ -1260,13 +1279,13 @@ def basic_player_single():
 def delete_post():
     postId = json.loads(request.data)
     postId = postId['postId']
-    post = Post.query.get(postId)
-    search=Search.query.get(post.search_id)
+    post = Player.query.get(postId)
+    
     if post:
    
-        if search.user_id == current_user.id:
-            db.session.delete(post)
-            db.session.commit()
+        
+        db.session.delete(post)
+        db.session.commit()
     
     return jsonify({})
 

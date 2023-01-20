@@ -35,7 +35,7 @@ function deletePost(postId) {
     method: "POST",
     body: JSON.stringify({ postId: postId }),
   }).then((_res) => {
-    window.location.href = "/searches";
+    window.location.href = "/roster";
   });
 }
 
