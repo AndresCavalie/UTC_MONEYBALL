@@ -52,11 +52,19 @@ game_player = db.Table( #ASSOCIATION TABLE
     db.Column("game_id", db.ForeignKey('game.id'), primary_key = True),
     db.Column("player_id", db.ForeignKey('player.id'), primary_key = True)
 )
+
+touches = db.Table( #ASSOCIATION TABLE
+    "touches",
+    db.metadata,
+    db.Column("posession_id", db.ForeignKey('possession.id'), primary_key = True),
+    db.Column("player_id", db.ForeignKey('player.id'), primary_key = True)
+)
 class Game(db.Model):
     id = db.Column(db.Integer, primary_key = True)
     team = db.Column(db.String)
     # date = db.Column(db.DateTime(timezone=True), nullable= True)
     date = db.Column(db.String, nullable= True)
+    
     players = db.relationship("Player", secondary = game_player, backref="games")
     possessions = db.relationship('Possession')
 
@@ -70,7 +78,7 @@ class Player(db.Model):
 class Possession(db.Model):
     id = db.Column(db.Integer, primary_key = True)
     game_id = db.Column(db.Integer, db.ForeignKey('game.id'))
-    
+    players = db.relationship("Player", secondary = touches, backref="posessions")
     possnum = db.Column(db.Integer)
     tagstart = db.Column(db.String(30), nullable=True)
     poss = db.Column(db.Boolean)

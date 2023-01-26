@@ -530,35 +530,64 @@ def games():
         
         
         
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
         #note WHAT ARE THE NONE VALUES IN SHOTCLOCK ABOUT
         
         poss1_sum = Decimal(0)
         shot_poss1 = db.session.query(Possession.shotclock).filter(and_(Possession.poss==1,Possession.game_id==games[i].id)).all()
         poss0_sum = Decimal(0)
-        shot_poss0 = db.session.query(Possession.shotclock).filter(and_(Possession.poss==0,Possession.game_id==games[i].id)).all()
+        shot_poss0 = db.session.query(Possession.id).filter(and_(Possession.poss==0,Possession.game_id==games[i].id)).all()
         
-        
+        poss1_divisor = Decimal(0)
         for j in range(len(shot_poss1)):
             if shot_poss1[j][0] != None:
                 poss1_sum += Decimal(30) - Decimal(shot_poss1[j][0])
+                poss1_divisor += Decimal(1)
+            
+            
             
         for j in range(len(shot_poss0)):
-            if shot_poss0[j][0] != None:
-                poss0_sum += Decimal(20) - Decimal(shot_poss0[j][0])
+            print(shot_poss0[j])
             
+        print("GAME")
         getcontext().prec = 6
         #the DIVISOR MAY CONTAIN NONES note
-        posslength = (poss1_sum + poss0_sum) / (Decimal(len(shot_poss1)) + Decimal(len(shot_poss0)))
+        # posslength = (poss1_sum + poss0_sum) / (Decimal(len(shot_poss1)) + Decimal(len(shot_poss0)))
         game_sums[8][0] += 1
-        game_sums[8][1] += posslength
-        getcontext().prec = 4
-        posslength = posslength + Decimal(0)
-        
+        # game_sums[8][1] += posslength
+        # getcontext().prec = 4
+        # posslength = posslength + Decimal(0)
+        posslength  = 0 
         if posslength != 0:
             game_stats.append(posslength)
         else:
             game_stats.append('-')
-            
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
         
         
         #ASK LOGAN ABOUT THIS note
@@ -772,7 +801,7 @@ def games():
         
         #print(all_game_stats)
         
-        print(all_game_stats)
+        
     getcontext().prec = 4    
     for i in range(len(game_sums)):
         if i >= 2 and i <=4:
@@ -917,11 +946,20 @@ def triggers():
 @login_required
 def home():
     if request.method == 'POST':
+        players = db.session.query(Player.initials).all()
         sheet = request.files['data']
         df = pd.read_excel(sheet)
         #from one spreadsheet, create one game, and posessions with players
         playerlist = []
-        
+        active_initials = []
+        initials = set()
+        for i in range(len(players)):
+            initials.add(players[i][0])
+            
+        for header in df.columns:
+            if header in initials:
+                active_initials.append(header)
+        print(active_initials)
         game = Game(team = df.loc[0,"Opp"],date = str(df.loc[0,"Date"]) ) #, date = df.loc[i,"Date"])
         db.session.add(game)
         db.session.commit()
@@ -1081,14 +1119,25 @@ def home():
                                 sb3 = int(df.loc[i,"SB3"]),
                                 ft = int(df.loc[i,"FT"]),
                                 points = int(df.loc[i,"POINTS"]))
-                                
+            
             db.session.add(poss)
-            db.session.commit()   
+            db.session.commit()  
+            for i in range(len(active_initials)):
+                touch = (df.loc[i, active_initials[i]])
+                if touch == 1:
+                    current_player = Player.query.filter_by(initials=active_initials[i]).first()
+                    poss.players.append(current_player)
+                    db.session.commit()
+                    db.session.add(current_player)    
+                    db.session.commit()
+                    
+                                
         for i in range(len(playerlist)):
             game.players.append(playerlist[i]) 
             db.session.commit()
             db.session.add(playerlist[i])    
             db.session.commit()
+        
         return render_template("add_game.html",user=current_user)
     # if request.method == 'POST':
     #     searchName = request.form.get('searchNameName')
