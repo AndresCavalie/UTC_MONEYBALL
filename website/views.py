@@ -1,7 +1,7 @@
 from flask import Blueprint, render_template, request, flash, jsonify, redirect,url_for,session
 from flask_login import login_required, current_user
 views = Blueprint('views',__name__)
-from .models import Note, Search, Post, Info, Game, Possession, Player
+from .models import Note, Search, Post, Info, Game, Possession, Player, touches
 from . import db, rmt
 import json
 import pandas as pd
@@ -393,7 +393,7 @@ def games():
     
     all_game_stats = []
     
-    game_sums = [0,0,[0,0],[0,0],[0,0],0,0,0,[Decimal(0),Decimal(0)],[Decimal(0),Decimal(0)],[Decimal(0),Decimal(0)],[Decimal(0),Decimal(0)],[Decimal(0),Decimal(0)],0,0,0,[Decimal(0),Decimal(0)],[Decimal(0),Decimal(0)]]
+    game_sums = [0,0,[0,0],[0,0],[0,0],0,0,0,[Decimal(0),Decimal(0)],[Decimal(0),Decimal(0)],[Decimal(0),Decimal(0)],[Decimal(0),Decimal(0)],0,0,0,[Decimal(0),Decimal(0)],[Decimal(0),Decimal(0)]]
     
     for i in range(len(games)):
         
@@ -543,31 +543,41 @@ def games():
         
         #note WHAT ARE THE NONE VALUES IN SHOTCLOCK ABOUT
         
-        poss1_sum = Decimal(0)
-        shot_poss1 = db.session.query(Possession.shotclock).filter(and_(Possession.poss==1,Possession.game_id==games[i].id)).all()
-        poss0_sum = Decimal(0)
-        shot_poss0 = db.session.query(Possession.id).filter(and_(Possession.poss==0,Possession.game_id==games[i].id)).all()
+        poss_sum = Decimal(0)
+        poss1 = db.session.query(Possession.shotclock).filter(and_(Possession.poss==1,Possession.game_id==games[i].id)).all()
         
-        poss1_divisor = Decimal(0)
-        for j in range(len(shot_poss1)):
-            if shot_poss1[j][0] != None:
-                poss1_sum += Decimal(30) - Decimal(shot_poss1[j][0])
-                poss1_divisor += Decimal(1)
+        for j in range(len(poss1)):
+            if poss1[j][0] != None:
+                poss_sum += Decimal(30) - Decimal(poss1[j][0])
+                
+        poss0 = db.session.query(Possession.id).filter(and_(Possession.poss==0,Possession.game_id==games[i].id)).all()
+        
+        for j in range(len(poss0)):
+            poss_current =   Possession.query.filter_by(id=poss0[j][0]).first()
+            poss_prev =      Possession.query.filter_by(id=poss0[j][0]-1).first()
+            if poss_prev.result == 'FD' or poss_prev.result == 'SF' or poss_prev.offreb == 1:
+                poss_sum += Decimal(20) - Decimal(poss_current.shotclock)
+            elif poss_prev.result =='NR':
+                poss_sum += Decimal(poss_prev.shotclock) - Decimal(poss_current.shotclock)
+        
             
             
+        
             
-        for j in range(len(shot_poss0)):
-            print(shot_poss0[j])
             
-        print("GAME")
+        
+            
+        
         getcontext().prec = 6
+        posslength = poss_sum / poss
+        getcontext().prec = 3
+        posslength = posslength + Decimal(0)
         #the DIVISOR MAY CONTAIN NONES note
         # posslength = (poss1_sum + poss0_sum) / (Decimal(len(shot_poss1)) + Decimal(len(shot_poss0)))
         game_sums[8][0] += 1
-        # game_sums[8][1] += posslength
+        game_sums[8][1] += posslength
         # getcontext().prec = 4
         # posslength = posslength + Decimal(0)
-        posslength  = 0 
         if posslength != 0:
             game_stats.append(posslength)
         else:
@@ -587,20 +597,7 @@ def games():
         
         
         
-        
-        
-        
-        #ASK LOGAN ABOUT THIS note
-        tagperc = 0
-        game_sums[9][0] += 1
-        game_sums[9][1] += tagperc
-        if tagperc != 0:
-            game_stats.append(tagperc)
-        else:
-            game_stats.append('-')
-        
-            
-        
+       
         #AVERAGE OF (30 - First Trigger (Column AH) for possession = 1);  Do not count Possession = 0 rows
         
         poss1_sum = Decimal(0)
@@ -616,9 +613,9 @@ def games():
             
         getcontext().prec = 6
         triggertime = (poss1_sum) / Decimal(len(triggers))
-        game_sums[10][0] += 1
-        game_sums[10][1] += triggertime
-        getcontext().prec = 4
+        game_sums[9][0] += 1
+        game_sums[9][1] += triggertime
+        getcontext().prec = 2
         triggertime = triggertime + Decimal(0)
         
         if triggertime != 0:
@@ -650,9 +647,9 @@ def games():
             
         getcontext().prec = 6
         bolttime = (poss1_sum) / Decimal(len(bolt))
-        game_sums[11][1] += bolttime
-        game_sums[11][0] += 1
-        getcontext().prec = 4
+        game_sums[10][1] += bolttime
+        game_sums[10][0] += 1
+        getcontext().prec = 2
         bolttime = bolttime + Decimal(0)
         
         if bolttime != 0:
@@ -673,7 +670,7 @@ def games():
         poss1_sum = Decimal(0)
         painttouch = db.session.query(Possession.painttouchtime).filter(and_(Possession.poss==1,Possession.painttouchtime != None, Possession.game_id==games[i].id)).all()
         
-        
+        print(painttouch)
         
         for j in range(len(painttouch)):
             if painttouch[j][0] != None:
@@ -683,9 +680,9 @@ def games():
             
         getcontext().prec = 6
         painttouchtime = (poss1_sum) / Decimal(len(painttouch))
-        game_sums[12][1] += painttouchtime
-        game_sums[12][0] += 1
-        getcontext().prec = 4
+        game_sums[11][1] += painttouchtime
+        game_sums[11][0] += 1
+        getcontext().prec = 3
         painttouchtime = painttouchtime + Decimal(0)
         
         if painttouchtime != 0:
@@ -703,7 +700,7 @@ def games():
         poss_with_paint = db.session.query(Possession.painttouchtime).filter(and_(Possession.painttouchtime != None, Possession.game_id==games[i].id)).count()
         
         
-        game_sums[13] += poss_with_paint
+        game_sums[12] += poss_with_paint
         if poss_with_paint != 0:
             game_stats.append(poss_with_paint)
         else:
@@ -723,7 +720,7 @@ def games():
                 posttouches += Decimal(posttouch[j][0])
             
         
-        game_sums[14] += posttouches   
+        game_sums[13] += posttouches   
         
         if posttouches != 0:
             game_stats.append(posttouches)
@@ -750,7 +747,7 @@ def games():
             
         
             
-        game_sums[15] += passes_sum 
+        game_sums[14] += passes_sum 
         if passes_sum != 0:
             game_stats.append(passes_sum)
         else:
@@ -763,14 +760,14 @@ def games():
         getcontext().prec = 6
         
         pass_poss = passes_sum/poss
-        game_sums[16][0] += 1
-        game_sums[16][1] += pass_poss 
-        getcontext().prec = 2
+        game_sums[15][0] += passes_sum
+        game_sums[15][1] += poss 
         
-        pass_poss = pass_poss + Decimal(0)
+        
+        
         
         if pass_poss != 0:
-            game_stats.append(str(pass_poss)+'%')
+            game_stats.append(str(passes_sum)+'/'+str(poss))
         else:
             game_stats.append('-')
         
@@ -781,11 +778,14 @@ def games():
         #if you do want me to store specifically who touches, we may need to agree on a permanent format for where player touches will be in 
         #the spreadsheet // perhaps per position or player number.
         #perhaps add another
+        getcontext().prec = 7
+        passes = db.session.query(touches).join(Possession, Possession.id==touches.c.posession_id).filter(and_(Possession.game_id == games[i].id)).count()
+        print(passes)
         avgtouches = 0
-        game_sums[17][0] += 1
-        game_sums[17][1] += avgtouches 
-        if avgtouches != 0:
-            game_stats.append(tagperc)
+        game_sums[16][0] += 1
+        game_sums[16][1] += passes 
+        if passes != 0:
+            game_stats.append(passes)
         else:
             game_stats.append('-')    
             
@@ -807,12 +807,23 @@ def games():
         if i >= 2 and i <=4:
             game_sums[i] = (str)(game_sums[i][0]) +'/'+ (str)(game_sums[i][1])
         
-        if i>=8 and i<=12:
+        if i>=8 and i<=11 :
+            if i==8 or i ==11:
+                getcontext().prec = 3
+            if i ==9 or i ==10:
+                getcontext().prec = 2
             game_sums[i] = game_sums[i][1]/game_sums[i][0]
+            getcontext().prec = 4 
         
-        if i >= 16:
+        if i == 15:
             getcontext().prec = 2
-            game_sums[i] = str(game_sums[i][1]/game_sums[i][0]) + '%'
+            game_sums[i] = str(game_sums[i][0])+'/'+str(game_sums[i][1]) 
+        if i ==16:
+            getcontext().prec = 7
+            print(game_sums[i][1])
+            print(game_sums[i][0])
+            game_sums[i] = game_sums[i][1]/game_sums[i][0]
+            print(game_sums[i])
     return render_template("games.html", user=current_user, stats = all_game_stats, games=games, sums = game_sums)
 
 
@@ -1070,8 +1081,25 @@ def home():
                 if p5 not in playerlist:
                     playerlist.append(p5)
                 p5 = p5.id
+            
+            if df.loc[i,"ShotClock"] == None or pd.isna(df.loc[i,"ShotClock"]):
+                shotclock = None
+            else:
+                shotclock = (df.loc[i,"ShotClock"]).item()
                 
+            if df.loc[i,"First Trigger"] == None or pd.isna(df.loc[i,"First Trigger"]):
+                firsttrigger = None
+            else:
+                firsttrigger = df.loc[i,"First Trigger"].item()
+                print(type(df.loc[i,"First Trigger"]))
+                print(df.loc[i,"First Trigger"])
                 
+            if df.loc[i,"NumPasses"] == None or pd.isna(df.loc[i,"NumPasses"]):
+                numpasses = None
+            else:
+                numpasses = (df.loc[i,"NumPasses"]).item()
+            
+            
             poss = Possession(game_id=game.id,
                                 possnum = int(df.loc[i,"Poss #"]),
                                 tagstart = tagstart,
@@ -1092,7 +1120,7 @@ def home():
                                 passer = passer,
                                 csjumper = df.loc[i,"C&S Jumper"],
                                 esq = df.loc[i,"ESQ"],
-                                shotclock = df.loc[i,"ShotClock"],
+                                shotclock = shotclock,
                                 p1 = p1,
                                 p2 = p2,
                                 p3 = p3,
@@ -1104,11 +1132,11 @@ def home():
                                 tag4 = df.loc[i,"4 Tag"],
                                 tag5 = df.loc[i,"5 Tag"],
                                 offreb = df.loc[i,"OffReb"],
-                                firsttrigger = int(df.loc[i,"First Trigger"]),
+                                firsttrigger = firsttrigger,
                                 bolt = df.loc[i,"Bolt"],
                                 painttouchtime = df.loc[i,"Paint Touch Time"],
                                 posttouches = df.loc[i,"PostTouches"],
-                                numpasses = int(df.loc[i,"NumPasses"]),
+                                numpasses = numpasses,
                                 r2 = int(df.loc[i,"R2"]),
                                 pm2 = int(df.loc[i,"PM2"]),
                                 pt2 = int(df.loc[i,"PT2"]),
@@ -1122,10 +1150,12 @@ def home():
             
             db.session.add(poss)
             db.session.commit()  
-            for i in range(len(active_initials)):
-                touch = (df.loc[i, active_initials[i]])
+            for j in range(len(active_initials)):
+                
+                touch = (df.loc[i, active_initials[j]])
+                
                 if touch == 1:
-                    current_player = Player.query.filter_by(initials=active_initials[i]).first()
+                    current_player = Player.query.filter_by(initials=active_initials[j]).first()
                     poss.players.append(current_player)
                     db.session.commit()
                     db.session.add(current_player)    
