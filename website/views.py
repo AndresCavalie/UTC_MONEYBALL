@@ -81,7 +81,7 @@ def basic_player():
                 print(sum)
             esq_ = sum
             
-            getcontext().prec = 3
+            getcontext().prec = 2
             if fga_ != 0:
                 
                 esq_ = (esq_ / fga_)#* Decimal(100)
@@ -91,7 +91,7 @@ def basic_player():
             else:
                 esq.append(0)
             if fta_ != 0:
-                
+                getcontext().prec = 3 
                 ftperc_ = (ftm_ / fta_) * (Decimal(100))
                 ftperc.append(ftperc_)
                 ftpercs += ftperc_
@@ -186,8 +186,9 @@ def shot_types():
                     #SQ POINTS TOTAL
                     sq = db.session.query(Possession.esq).filter(and_((or_(Possession.result=="Miss",Possession.result=="Make")),Possession.shot==shot)).all()
                     totalsq = Decimal(0)
+                    getcontext().prec = 2
                     for x in sq:
-                        totalsq += Decimal(x[0])
+                        totalsq += round(Decimal(x[0]))
                     sq_points.append(totalsq)
                     
                     pts = db.session.query(Possession.points).filter(and_((or_(Possession.result=="Miss",Possession.result=="Make")),Possession.shot==shot)).all()
@@ -208,7 +209,7 @@ def shot_types():
                     sq = db.session.query(Possession.esq).filter(and_((or_(Possession.result=="Miss",Possession.result=="Make")),Possession.open3==1)).all()
                     totalsq = Decimal(0)
                     for x in sq:
-                        totalsq += Decimal(x[0])
+                        totalsq += round(Decimal(x[0]))
                     sq_points.append(totalsq)
                     
                     pts = db.session.query(Possession.points).filter(and_((or_(Possession.result=="Miss",Possession.result=="Make")),Possession.open3==1)).all()
@@ -903,8 +904,8 @@ def triggers():
             sq_ratio = sq_sum_6prec / instances
         
         
-        getcontext().prec = 4
-        sq_ratio = sq_ratio + Decimal(0)
+        getcontext().prec = 2
+        sq_ratio = sq_ratio + Decimal(0.0000)
         
         if sq_ratio != 0:
             trigger_data.append(sq_ratio)
@@ -924,7 +925,7 @@ def triggers():
         if instances != 0 :
             pt_ratio = pt_sum / instances
         
-        getcontext().prec = 4
+        getcontext().prec = 2
         pt_ratio = pt_ratio + Decimal(0)
         
         if pt_ratio != 0:
@@ -1328,7 +1329,7 @@ def basic_player_single():
         
         
         if fga_ != 0:
-            
+            getcontext().prec = 2
             esq_ = (esq_ / fga_)#* Decimal(100)
             
             esq.append(esq_)
@@ -1338,7 +1339,7 @@ def basic_player_single():
             
             
         if fta_ != 0:
-            
+            getcontext().prec = 3
             ftperc_ = (ftm_ / fta_) * (Decimal(100))
             ftperc.append(ftperc_)
         else:
