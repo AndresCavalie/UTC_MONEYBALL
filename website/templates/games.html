@@ -18,6 +18,7 @@
 <table class='table table-striped'>
   <thead class='thead-dark'>
   <tr>
+    
     <th>Game</th>
     <th>Poss</th>
     <th>Chances</th>
@@ -46,7 +47,17 @@
     
     
     {%for j in range(0,(stats[i] | length))%}
+    {%if j == 0%}
+    <td>{{stats[i][j][0]}}<button
+      type="button"
+      class="btn btn-danger"
+      onClick="deleteGame({{stats[i][j][1]}})"
+    >
+      <h6>Delete</h6>
+    </button></td>
+    {%else%}
     <td>{{stats[i][j]}}</td>
+    {%endif%}
     {%endfor%}
 
    

@@ -399,8 +399,8 @@ def games():
     for i in range(len(games)):
         
         game_stats = []
-        
-        game_stats.append(games[i].team+" "+ games[i].date)
+        game_info = [games[i].team+" "+ games[i].date,games[i].id]
+        game_stats.append(game_info)
         
         
         poss = Decimal(db.session.query(Possession).filter(and_(Possession.poss==1,Possession.game_id==games[i].id)).count())
@@ -1365,6 +1365,20 @@ def delete_post():
    
         
         db.session.delete(post)
+        db.session.commit()
+    
+    return jsonify({})
+
+@views.route('/delete-game', methods=["POST"])
+def delete_game():
+    gameId = json.loads(request.data)
+    gameId = gameId['gameId']
+    game = Game.query.get(gameId)
+    
+    if game:
+   
+        
+        db.session.delete(game)
         db.session.commit()
     
     return jsonify({})
